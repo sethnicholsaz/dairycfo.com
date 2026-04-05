@@ -53,12 +53,12 @@ export async function renderNewsletterEmail(
   const bodyHtml = mdxContent
     .replace(/<MarketSnapshot\s*\/>/g, "")
     .replace(/<SponsorBlock[^/]*\/>/g, "")
-    .replace(/^### (.+)$/gm, '<h3 style="font-family:Georgia,serif;color:#1c4a2a;font-size:18px;margin:20px 0 8px;">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 style="font-family:Georgia,serif;color:#1c4a2a;font-size:22px;margin:24px 0 10px;">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 style="font-family:Georgia,serif;color:#1c4a2a;font-size:28px;margin:0 0 14px;">$1</h1>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-family:Georgia,serif;color:#1c4a2a;font-size:18px;font-weight:bold;margin:24px 0 8px;">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-family:Georgia,serif;color:#1c4a2a;font-size:22px;font-weight:bold;margin:28px 0 10px;">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 style="font-family:Georgia,serif;color:#1c4a2a;font-size:28px;font-weight:bold;margin:0 0 14px;">$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #d8d2be;margin:20px 0;">')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #d8d2be;margin:24px 0;">')
     .split(/\n\n+/)
     .map((block) => {
       if (block.trim() === "") return ""
@@ -67,11 +67,11 @@ export async function renderNewsletterEmail(
         const items = block
           .split("\n")
           .filter((l) => l.startsWith("- "))
-          .map((l) => `<li style="margin:4px 0;">${l.replace(/^- /, "")}</li>`)
+          .map((l) => `<li style="margin:6px 0;font-size:16px;line-height:1.75;color:#2d2a1e;font-family:Georgia,serif;">${l.replace(/^- /, "")}</li>`)
           .join("")
         return `<ul style="padding-left:20px;margin:12px 0;">${items}</ul>`
       }
-      return `<p style="margin:0 0 14px;line-height:1.7;">${block.trim()}</p>`
+      return `<p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">${block.trim()}</p>`
     })
     .filter(Boolean)
     .join("\n")

@@ -51,6 +51,7 @@ export default function NewsletterModern({
   sponsorUrl,
   unsubscribeUrl,
 }: NewsletterModernProps) {
+  marketPrices = marketPrices ?? []
   return (
     <Html lang="en">
       <Tailwind config={{ presets: [pixelBasedPreset] }}>

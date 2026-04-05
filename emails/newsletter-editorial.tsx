@@ -1,6 +1,7 @@
 /**
  * Template A — Editorial Broadsheet
  * Newspaper masthead feel, serif-heavy, best for long-form issues.
+ * All styles inline for maximum email client compatibility.
  */
 import {
   Html,
@@ -15,8 +16,6 @@ import {
   Text,
   Hr,
   Link,
-  Tailwind,
-  pixelBasedPreset,
 } from "@react-email/components"
 
 interface MarketPrice {
@@ -39,158 +38,154 @@ interface NewsletterEditorialProps {
 }
 
 export default function NewsletterEditorial({
-  issueNumber,
-  issueDate,
-  title,
-  previewText,
-  bodyHtml,
-  marketPrices,
-  sponsorName,
-  sponsorMessage,
-  sponsorUrl,
-  unsubscribeUrl,
+  issueNumber = 1,
+  issueDate = "April 2026",
+  title = "Class III Drops as Cheese Inventories Build Ahead of Spring",
+  previewText = "Class III prices fell this week as cold storage cheese stocks rose.",
+  bodyHtml = `<p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">Every spring, cows eat fresh pasture grass and their bodies respond the way you'd expect — more milk, more butterfat, more everything. Dairymen call it spring flush, and it happens like clockwork from about March through May across most of the country.</p><p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">For the creamery, spring flush means more raw milk hitting the dock at lower spot prices. For the farmer, it means the Class III price — the one that determines most of their milk check — tends to soften as supply outpaces demand.</p><h2 style="font-family:Georgia,serif;color:#1c4a2a;font-size:22px;margin:28px 0 10px;font-weight:bold;">Why Does This Affect Your Cheese Price?</h2><p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">Class III is the federal milk marketing order price tied directly to cheese. When cheese plants receive more milk than they can move, cold storage builds up. When storage builds, the spot price on the CME drops. When spot drops, the announced Class III price follows about 6 weeks later. That's the lag you'll sometimes hear dairymen grumbling about.</p><p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">This week that lag caught up — Class III fell to $17.84/cwt, down $0.22 from last month's announcement.</p>`,
+  marketPrices = [
+    { label: "Class III", value: "$17.84", unit: "/cwt" },
+    { label: "Class IV", value: "$18.20", unit: "/cwt" },
+    { label: "Butter", value: "$2.61", unit: "/lb" },
+    { label: "Cheddar", value: "$1.72", unit: "/lb" },
+  ],
+  sponsorName = "Valley Ag Supply",
+  sponsorMessage = "Supplying creameries and dairies across the Southwest with equipment, parts, and technical support since 1987.",
+  sponsorUrl = "https://example.com",
+  unsubscribeUrl = "https://dairycfo.com/api/unsubscribe?token=preview",
 }: NewsletterEditorialProps) {
   return (
     <Html lang="en">
-      <Tailwind config={{ presets: [pixelBasedPreset] }}>
-        <Head />
-        <Preview>{previewText}</Preview>
-        <Body className="bg-[#f7f4ed] font-serif m-0 p-0">
-          <Container className="max-w-600 mx-auto">
+      <Head />
+      <Preview>{previewText}</Preview>
+      <Body style={{ margin: 0, padding: 0, backgroundColor: "#f7f4ed" }}>
+        <Container style={{ maxWidth: "600px", margin: "0 auto" }}>
 
-            {/* Top rule */}
-            <Section className="px-0 pt-24 pb-0">
-              <Hr className="border-solid border-[#1c4a2a] border-t-2 m-0" />
-            </Section>
+          {/* Top green rule */}
+          <Section style={{ padding: "24px 0 0" }}>
+            <Hr style={{ border: "none", borderTop: "3px solid #1c4a2a", margin: 0 }} />
+          </Section>
 
-            {/* Dateline */}
-            <Section className="bg-[#f7f4ed] px-32 py-8">
+          {/* Dateline */}
+          <Section style={{ backgroundColor: "#f7f4ed", padding: "10px 32px" }}>
+            <Row>
+              <Column>
+                <Text style={{ fontSize: "11px", color: "#8a9080", letterSpacing: "0.12em", textTransform: "uppercase", margin: 0, fontFamily: "Arial, sans-serif" }}>
+                  Issue #{issueNumber} · {issueDate}
+                </Text>
+              </Column>
+              <Column style={{ textAlign: "right" }}>
+                <Text style={{ fontSize: "11px", color: "#8a9080", letterSpacing: "0.12em", textTransform: "uppercase", margin: 0, fontFamily: "Arial, sans-serif" }}>
+                  dairycfo.com
+                </Text>
+              </Column>
+            </Row>
+          </Section>
+
+          {/* Masthead */}
+          <Section style={{ backgroundColor: "#f7f4ed", padding: "4px 32px 16px" }}>
+            <Text style={{ fontSize: "54px", fontFamily: "Georgia, serif", fontWeight: "bold", color: "#1c4a2a", margin: 0, lineHeight: "1", letterSpacing: "-0.02em" }}>
+              DairyCFO
+            </Text>
+            <Text style={{ fontSize: "11px", color: "#c8902a", letterSpacing: "0.15em", textTransform: "uppercase", margin: "6px 0 0", fontFamily: "Arial, sans-serif" }}>
+              What's Happening on the Farm
+            </Text>
+          </Section>
+
+          {/* Double rule */}
+          <Section style={{ padding: 0 }}>
+            <Hr style={{ border: "none", borderTop: "3px solid #1c4a2a", margin: 0 }} />
+            <Hr style={{ border: "none", borderTop: "1px solid #1c4a2a", margin: "3px 0 0" }} />
+          </Section>
+
+          {/* Issue headline */}
+          <Section style={{ backgroundColor: "#ffffff", padding: "28px 32px 24px" }}>
+            <Heading as="h1" style={{ fontSize: "30px", fontFamily: "Georgia, serif", fontWeight: "bold", color: "#111410", margin: 0, lineHeight: "1.25", letterSpacing: "-0.02em" }}>
+              {title}
+            </Heading>
+          </Section>
+
+          {/* Market prices strip */}
+          {marketPrices.length > 0 && (
+            <Section style={{ backgroundColor: "#1c4a2a", padding: "18px 32px" }}>
+              <Text style={{ fontSize: "10px", color: "#8ab89a", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 14px", fontFamily: "Arial, sans-serif" }}>
+                This Week's Prices
+              </Text>
               <Row>
-                <Column>
-                  <Text className="text-11 text-[#8a9080] tracking-widest uppercase m-0 font-sans">
-                    Issue #{issueNumber} · {issueDate}
-                  </Text>
-                </Column>
-                <Column className="text-right">
-                  <Text className="text-11 text-[#8a9080] tracking-widest uppercase m-0 font-sans">
-                    dairycfo.com
-                  </Text>
-                </Column>
+                {marketPrices.slice(0, 4).map((p) => (
+                  <Column key={p.label} style={{ textAlign: "center" }}>
+                    <Text style={{ fontSize: "22px", fontFamily: "Georgia, serif", fontWeight: "bold", color: "#ffffff", margin: 0, lineHeight: "1" }}>
+                      {p.value}
+                    </Text>
+                    <Text style={{ fontSize: "10px", color: "#8ab89a", textTransform: "uppercase", letterSpacing: "0.08em", margin: "5px 0 0", fontFamily: "Arial, sans-serif" }}>
+                      {p.label}
+                    </Text>
+                    <Text style={{ fontSize: "10px", color: "#4a7a5a", margin: "2px 0 0", fontFamily: "Arial, sans-serif" }}>
+                      {p.unit}
+                    </Text>
+                  </Column>
+                ))}
               </Row>
             </Section>
+          )}
 
-            {/* Masthead */}
-            <Section className="bg-[#f7f4ed] px-32 pb-16">
-              <Text className="text-48 font-bold text-[#1c4a2a] m-0 leading-none tracking-tight">
-                DairyCFO
-              </Text>
-              <Text className="text-12 text-[#c8902a] tracking-widest uppercase m-0 font-sans mt-4">
-                What's Happening on the Farm
-              </Text>
-            </Section>
+          {/* Body content */}
+          <Section style={{ backgroundColor: "#ffffff", padding: "32px 32px 28px" }}>
+            <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+          </Section>
 
-            <Section className="px-0">
-              <Hr className="border-solid border-[#1c4a2a] border-t-2 m-0" />
-              <Hr className="border-solid border-[#1c4a2a] border-t m-0 mt-2" />
-            </Section>
-
-            {/* Issue headline */}
-            <Section className="bg-white px-32 pt-32 pb-0">
-              <Heading
-                as="h1"
-                className="text-32 font-bold text-[#111410] m-0 leading-tight tracking-tight"
-              >
-                {title}
-              </Heading>
-            </Section>
-
-            {/* Market strip */}
-            {marketPrices.length > 0 && (
-              <Section className="bg-[#1c4a2a] px-32 py-16 mt-24">
-                <Text className="text-10 text-[#8ab89a] tracking-widest uppercase m-0 mb-12 font-sans">
-                  This Week's Prices
-                </Text>
-                <Row>
-                  {marketPrices.slice(0, 4).map((p) => (
-                    <Column key={p.label} className="text-center pr-8">
-                      <Text className="text-20 font-bold text-white m-0 leading-none">
-                        {p.value}
-                      </Text>
-                      <Text className="text-9 text-[#8ab89a] uppercase tracking-wide m-0 mt-4 font-sans">
-                        {p.label}
-                      </Text>
-                      <Text className="text-9 text-[#5a7a62] m-0 font-sans">
-                        {p.unit}
-                      </Text>
-                    </Column>
-                  ))}
-                </Row>
+          {/* Sponsor block */}
+          {sponsorName && (
+            <>
+              <Section style={{ padding: "0 32px" }}>
+                <Hr style={{ border: "none", borderTop: "1px solid #d8d2be", margin: 0 }} />
               </Section>
-            )}
-
-            {/* Body content */}
-            <Section className="bg-white px-32 py-32">
-              <div
-                style={{ fontSize: "16px", color: "#2d2a1e", lineHeight: "1.7" }}
-                dangerouslySetInnerHTML={{ __html: bodyHtml }}
-              />
-            </Section>
-
-            {/* Sponsor block */}
-            {sponsorName && (
-              <>
-                <Section className="px-32 py-0">
-                  <Hr className="border-solid border-[#d8d2be] m-0" />
-                </Section>
-                <Section className="bg-[#faf8f2] px-32 py-20">
-                  <Text className="text-10 text-[#8a9080] tracking-widest uppercase m-0 mb-8 font-sans">
-                    Sponsored by
+              <Section style={{ backgroundColor: "#faf8f2", padding: "20px 32px" }}>
+                <Text style={{ fontSize: "10px", color: "#8a9080", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 8px", fontFamily: "Arial, sans-serif" }}>
+                  Sponsored by
+                </Text>
+                <Text style={{ fontSize: "15px", fontWeight: "bold", color: "#1c4a2a", margin: 0, fontFamily: "Georgia, serif" }}>
+                  {sponsorName}
+                </Text>
+                {sponsorMessage && (
+                  <Text style={{ fontSize: "13px", color: "#4a5046", margin: "6px 0 0", lineHeight: "1.6", fontFamily: "Arial, sans-serif" }}>
+                    {sponsorMessage}
                   </Text>
-                  <Text className="text-14 font-bold text-[#1c4a2a] m-0">
-                    {sponsorName}
-                  </Text>
-                  {sponsorMessage && (
-                    <Text className="text-13 text-[#4a5046] m-0 mt-4 leading-relaxed font-sans">
-                      {sponsorMessage}
-                    </Text>
-                  )}
-                  {sponsorUrl && (
-                    <Link href={sponsorUrl} className="text-12 text-[#c8902a] font-sans mt-8 block">
-                      Learn more →
-                    </Link>
-                  )}
-                </Section>
-              </>
-            )}
+                )}
+                {sponsorUrl && (
+                  <Link href={sponsorUrl} style={{ fontSize: "12px", color: "#c8902a", display: "block", marginTop: "10px", fontFamily: "Arial, sans-serif" }}>
+                    Learn more →
+                  </Link>
+                )}
+              </Section>
+            </>
+          )}
 
-            {/* Footer */}
-            <Section className="px-0">
-              <Hr className="border-solid border-[#1c4a2a] border-t-2 m-0" />
-            </Section>
-            <Section className="bg-[#1c2e1f] px-32 py-24">
-              <Text className="text-12 text-[#8ab89a] m-0 font-sans leading-relaxed">
-                DairyCFO helps creamery teams understand what's happening on the dairy farms
-                that supply their milk. Written by someone who's been on both sides of the tank.
-              </Text>
-              <Text className="text-11 text-[#4a6050] m-0 mt-12 font-sans">
-                <Link href={unsubscribeUrl} className="text-[#6a8870] no-underline">
-                  Unsubscribe
-                </Link>
-                {" · "}
-                <Link href="https://dairycfo.com" className="text-[#6a8870] no-underline">
-                  View on web
-                </Link>
-                {" · "}
-                DairyCFO · PO Box 1 · Phoenix, AZ 85001
-              </Text>
-              <Text className="text-10 text-[#3a5040] m-0 mt-8 font-sans">
-                © {new Date().getFullYear()} DairyCFO. Not financial advice.
-              </Text>
-            </Section>
+          {/* Footer rule */}
+          <Section style={{ padding: 0 }}>
+            <Hr style={{ border: "none", borderTop: "3px solid #1c4a2a", margin: 0 }} />
+          </Section>
 
-          </Container>
-        </Body>
-      </Tailwind>
+          {/* Footer */}
+          <Section style={{ backgroundColor: "#1c2e1f", padding: "28px 32px" }}>
+            <Text style={{ fontSize: "13px", color: "#8ab89a", margin: 0, fontFamily: "Arial, sans-serif", lineHeight: "1.6" }}>
+              DairyCFO helps creamery teams understand what's happening on the dairy farms
+              that supply their milk. Written by someone who's been on both sides of the tank.
+            </Text>
+            <Text style={{ fontSize: "11px", color: "#4a6050", margin: "14px 0 0", fontFamily: "Arial, sans-serif" }}>
+              <Link href={unsubscribeUrl} style={{ color: "#6a8870", textDecoration: "none" }}>Unsubscribe</Link>
+              {" · "}
+              <Link href="https://dairycfo.com" style={{ color: "#6a8870", textDecoration: "none" }}>View on web</Link>
+              {" · "}
+              DairyCFO · PO Box 1 · Phoenix, AZ 85001
+            </Text>
+            <Text style={{ fontSize: "10px", color: "#3a5040", margin: "8px 0 0", fontFamily: "Arial, sans-serif" }}>
+              © {new Date().getFullYear()} DairyCFO. Not financial advice.
+            </Text>
+          </Section>
+
+        </Container>
+      </Body>
     </Html>
   )
 }
@@ -200,7 +195,7 @@ NewsletterEditorial.PreviewProps = {
   issueDate: "April 2026",
   title: "Class III Drops as Cheese Inventories Build Ahead of Spring",
   previewText: "Class III prices fell this week as cold storage cheese stocks rose — here's what it means for your milk check.",
-  bodyHtml: `<p>Every spring, cows eat fresh pasture grass and their bodies respond the way you'd expect — more milk, more butterfat, more everything. Dairymen call it spring flush, and it happens like clockwork from about March through May across most of the country.</p><p>For the creamery, spring flush means more raw milk hitting the dock at lower spot prices. For the farmer, it means the Class III price — the one that determines most of their milk check — tends to soften as supply outpaces demand.</p><h2>Why Does This Affect Your Cheese Price?</h2><p>Class III is the federal milk marketing order price tied directly to cheese. When cheese plants receive more milk than they can move, cold storage builds up. When storage builds, the spot price on the CME drops. When spot drops, the announced Class III price follows about 6 weeks later. That's the lag you'll sometimes hear dairymen grumbling about.</p><p>This week that lag caught up — Class III fell to $17.84/cwt, down $0.22 from last month's announcement.</p>`,
+  bodyHtml: `<p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">Every spring, cows eat fresh pasture grass and their bodies respond the way you'd expect — more milk, more butterfat, more everything. Dairymen call it spring flush, and it happens like clockwork from about March through May across most of the country.</p><p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">For the creamery, spring flush means more raw milk hitting the dock at lower spot prices. For the farmer, it means the Class III price — the one that determines most of their milk check — tends to soften as supply outpaces demand.</p><h2 style="font-family:Georgia,serif;color:#1c4a2a;font-size:22px;margin:28px 0 10px;font-weight:bold;">Why Does This Affect Your Cheese Price?</h2><p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">Class III is the federal milk marketing order price tied directly to cheese. When cheese plants receive more milk than they can move, cold storage builds up. When storage builds, the spot price on the CME drops. When spot drops, the announced Class III price follows about 6 weeks later. That's the lag you'll sometimes hear dairymen grumbling about.</p><p style="margin:0 0 16px;line-height:1.75;font-size:16px;color:#2d2a1e;font-family:Georgia,serif;">This week that lag caught up — Class III fell to $17.84/cwt, down $0.22 from last month's announcement.</p>`,
   marketPrices: [
     { label: "Class III", value: "$17.84", unit: "/cwt" },
     { label: "Class IV", value: "$18.20", unit: "/cwt" },
