@@ -7,7 +7,7 @@ async function getRecentMarketData() {
   const supabase = await createServiceClient()
   const { data } = await supabase
     .from("market_data")
-    .select("*")
+    .select("id, data_date, class_iii_price, class_iv_price, butter_price, cheese_blocks_price, nfdm_price, corn_price, alfalfa_price, soybean_meal_price, feed_cost_per_cwt, dairy_margin, class_iii_futures, source")
     .order("data_date", { ascending: false })
     .limit(10)
   return data ?? []

@@ -11,6 +11,11 @@ interface MarketRow {
   butter_price: number | null
   cheese_blocks_price: number | null
   nfdm_price: number | null
+  corn_price: number | null
+  alfalfa_price: number | null
+  soybean_meal_price: number | null
+  feed_cost_per_cwt: number | null
+  dairy_margin: number | null
   class_iii_futures: { month: string; price: number }[] | null
   source: string
 }
@@ -38,7 +43,7 @@ export function MarketDataAdmin({ recent }: Props) {
       const res = await fetch("/api/market-data/usda")
       const data = await res.json()
       if (res.ok) {
-        setFetchMsg(`✓ Fetched — Class III: ${data.class_iii ? "$" + data.class_iii : "n/a"}, Butter: ${data.butter ? "$" + data.butter : "n/a"}`)
+        setFetchMsg(`✓ Fetched — Butter: ${data.butter ? "$" + data.butter : "n/a"} · Feed cost: ${data.feed_cost_per_cwt ? "$" + data.feed_cost_per_cwt.toFixed(2) + "/cwt" : "n/a"} · Margin: ${data.dairy_margin ? "$" + data.dairy_margin.toFixed(2) + "/cwt" : "enter Class III to calculate"}`)
       } else {
         setFetchMsg("Error: " + data.error)
       }
@@ -178,27 +183,27 @@ export function MarketDataAdmin({ recent }: Props) {
         </form>
       </div>
 
-      {/* Recent data table */}
+      {/* Market prices table */}
       <div className="bg-white rounded-lg border border-[#d8d2be] overflow-hidden">
         <div className="px-6 py-4 border-b border-[#d8d2be]">
-          <h2 className="font-semibold text-[#1c2e1f]">Recent Market Data</h2>
+          <h2 className="font-semibold text-[#1c2e1f]">Market Prices</h2>
+          <p className="text-xs text-[#8a8068] mt-0.5">Class III/IV entered manually · Spot prices auto-fetched from CME via USDA</p>
         </div>
         {recent.length === 0 ? (
           <div className="px-6 py-10 text-center text-sm text-[#8a8068]">
-            No market data yet. Fetch from USDA or upload Barchart data above.
+            No market data yet. Click Fetch Now above.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-[#d8d2be]">
+                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-[#d8d2be] bg-[#fdfcf9]">
                   <th className="px-4 py-3 text-left">Date</th>
                   <th className="px-4 py-3 text-right">Class III</th>
                   <th className="px-4 py-3 text-right">Class IV</th>
                   <th className="px-4 py-3 text-right">Butter</th>
-                  <th className="px-4 py-3 text-right">Cheese Blocks</th>
+                  <th className="px-4 py-3 text-right">Cheese Blk</th>
                   <th className="px-4 py-3 text-right">NFDM</th>
-                  <th className="px-4 py-3 text-right">Futures</th>
                 </tr>
               </thead>
               <tbody>
@@ -212,13 +217,52 @@ export function MarketDataAdmin({ recent }: Props) {
                     <td className="px-4 py-3 text-right">{fmt(row.butter_price)}</td>
                     <td className="px-4 py-3 text-right">{fmt(row.cheese_blocks_price)}</td>
                     <td className="px-4 py-3 text-right">{fmt(row.nfdm_price)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Feed cost + margin table */}
+      <div className="bg-white rounded-lg border border-[#d8d2be] overflow-hidden">
+        <div className="px-6 py-4 border-b border-[#d8d2be]">
+          <h2 className="font-semibold text-[#1c2e1f]">Feed Cost & Dairy Margin</h2>
+          <p className="text-xs text-[#8a8068] mt-0.5">DMC formula: 60 lbs corn + 27.4 lbs alfalfa + 14.7 lbs soybean meal per cwt · Margin = Class III − Feed Cost</p>
+        </div>
+        {recent.length === 0 ? (
+          <div className="px-6 py-10 text-center text-sm text-[#8a8068]">No data yet.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-[#d8d2be] bg-[#fdfcf9]">
+                  <th className="px-4 py-3 text-left">Date</th>
+                  <th className="px-4 py-3 text-right">Corn /bu</th>
+                  <th className="px-4 py-3 text-right">Alfalfa /ton</th>
+                  <th className="px-4 py-3 text-right">SBM /ton</th>
+                  <th className="px-4 py-3 text-right">Feed Cost /cwt</th>
+                  <th className="px-4 py-3 text-right">Margin /cwt</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recent.map((row) => (
+                  <tr key={row.id} className="border-b border-[#f0ece0] last:border-0">
+                    <td className="px-4 py-3 font-medium text-[#1c2e1f]">
+                      {new Date(row.data_date + "T00:00:00").toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 text-right">{fmt(row.corn_price)}</td>
+                    <td className="px-4 py-3 text-right">{row.alfalfa_price != null ? `$${row.alfalfa_price}` : "—"}</td>
+                    <td className="px-4 py-3 text-right">{row.soybean_meal_price != null ? `$${row.soybean_meal_price}` : "—"}</td>
+                    <td className="px-4 py-3 text-right font-medium">{fmt(row.feed_cost_per_cwt)}</td>
                     <td className="px-4 py-3 text-right">
-                      {row.class_iii_futures ? (
-                        <span className="text-xs text-[#1c4a2a]">
-                          {row.class_iii_futures.length} months
+                      {row.dairy_margin != null ? (
+                        <span className={`font-semibold ${row.dairy_margin >= 8 ? "text-[#1c4a2a]" : row.dairy_margin >= 4 ? "text-amber-600" : "text-red-600"}`}>
+                          {fmt(row.dairy_margin)}
                         </span>
                       ) : (
-                        <span className="text-xs text-[#8a8068]">—</span>
+                        <span className="text-xs text-[#8a8068]">need Class III</span>
                       )}
                     </td>
                   </tr>
