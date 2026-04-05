@@ -2,51 +2,101 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import * as XLSX from "xlsx"
 
-// Expected Barchart Excel format:
-// Column A: Contract Month (e.g. "May 2026" or "2026-05")
-// Column B: Last Price (e.g. 18.50)
-// Column C: (optional) Open, High, Low columns may be present — we skip them
+// Supported Barchart Excel formats:
+//
+// 1. Simple 2-column:  A = Contract Month, B = Price
+// 2. Full Barchart multi-column (Excel add-in):
+//    Headers include "Contract Date" and "Close" columns
+//    e.g. Quotes | Name | Last | Expiration Date | Contract Date | ... | Close | ...
 
 interface FuturesRow {
   month: string
   price: number
 }
 
-function parseBarchartSheet(ws: XLSX.WorkSheet): FuturesRow[] {
-  const rows: FuturesRow[] = []
-  const range = XLSX.utils.decode_range(ws["!ref"] ?? "A1")
+interface ParseResult {
+  futures: FuturesRow[]
+  frontMonthPrice: number | null
+}
 
-  for (let r = range.s.r + 1; r <= range.e.r; r++) {
-    const monthCell = ws[XLSX.utils.encode_cell({ r, c: 0 })]
-    const priceCell = ws[XLSX.utils.encode_cell({ r, c: 1 })]
+function normalizeMonth(raw: string): string | null {
+  const s = raw.trim()
+  if (!s) return null
 
-    if (!monthCell || !priceCell) continue
+  // Already YYYY-MM
+  if (/^\d{4}-\d{2}$/.test(s)) return s
 
-    const rawMonth = String(monthCell.v ?? "").trim()
-    const rawPrice = parseFloat(String(priceCell.v ?? ""))
-
-    if (!rawMonth || isNaN(rawPrice) || rawPrice <= 0) continue
-
-    // Normalize month to "YYYY-MM" format
-    let month = rawMonth
-    const dateAttempt = new Date(rawMonth)
-    if (!isNaN(dateAttempt.getTime())) {
-      month = `${dateAttempt.getFullYear()}-${String(dateAttempt.getMonth() + 1).padStart(2, "0")}`
-    } else {
-      // Try "May 26" / "May 2026" format
-      const match = rawMonth.match(/([A-Za-z]+)\s+(\d{2,4})/)
-      if (match) {
-        const d = new Date(`${match[1]} 1, ${match[2].length === 2 ? "20" + match[2] : match[2]}`)
-        if (!isNaN(d.getTime())) {
-          month = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
-        }
-      }
+  // "Apr 2026" or "Apr 26"
+  const match = s.match(/([A-Za-z]+)\s+(\d{2,4})/)
+  if (match) {
+    const year = match[2].length === 2 ? "20" + match[2] : match[2]
+    const d = new Date(`${match[1]} 1, ${year}`)
+    if (!isNaN(d.getTime())) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
     }
-
-    rows.push({ month, price: rawPrice })
   }
 
-  return rows.sort((a, b) => a.month.localeCompare(b.month))
+  // Fallback: try Date constructor
+  const d = new Date(s)
+  if (!isNaN(d.getTime())) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+  }
+
+  return null
+}
+
+function parseBarchartSheet(ws: XLSX.WorkSheet): ParseResult {
+  const range = XLSX.utils.decode_range(ws["!ref"] ?? "A1")
+
+  // Read header row
+  const headers: string[] = []
+  for (let c = range.s.c; c <= range.e.c; c++) {
+    const cell = ws[XLSX.utils.encode_cell({ r: range.s.r, c })]
+    headers.push(cell ? String(cell.v ?? "").trim() : "")
+  }
+
+  // Detect Barchart multi-column format
+  const contractDateCol = headers.findIndex((h) => h === "Contract Date")
+  const closeCol = headers.findIndex((h) => h === "Close")
+
+  const rows: FuturesRow[] = []
+
+  if (contractDateCol !== -1 && closeCol !== -1) {
+    // Full Barchart multi-column format
+    for (let r = range.s.r + 1; r <= range.e.r; r++) {
+      const monthCell = ws[XLSX.utils.encode_cell({ r, c: contractDateCol })]
+      const closeCell = ws[XLSX.utils.encode_cell({ r, c: closeCol })]
+
+      if (!monthCell || !closeCell) continue
+
+      const month = normalizeMonth(String(monthCell.v ?? ""))
+      const price = parseFloat(String(closeCell.v ?? ""))
+
+      if (!month || isNaN(price) || price <= 0) continue
+      rows.push({ month, price })
+    }
+  } else {
+    // Simple 2-column format: A = month, B = price
+    for (let r = range.s.r + 1; r <= range.e.r; r++) {
+      const monthCell = ws[XLSX.utils.encode_cell({ r, c: 0 })]
+      const priceCell = ws[XLSX.utils.encode_cell({ r, c: 1 })]
+
+      if (!monthCell || !priceCell) continue
+
+      const month = normalizeMonth(String(monthCell.v ?? ""))
+      const price = parseFloat(String(priceCell.v ?? ""))
+
+      if (!month || isNaN(price) || price <= 0) continue
+      rows.push({ month, price })
+    }
+  }
+
+  rows.sort((a, b) => a.month.localeCompare(b.month))
+
+  // Front month = earliest contract = current announced price
+  const frontMonthPrice = rows.length > 0 ? rows[0].price : null
+
+  return { futures: rows, frontMonthPrice }
 }
 
 export async function POST(req: NextRequest) {
@@ -73,7 +123,7 @@ export async function POST(req: NextRequest) {
     const workbook = XLSX.read(buffer, { type: "buffer" })
     const sheetName = workbook.SheetNames[0]
     const ws = workbook.Sheets[sheetName]
-    const futures = parseBarchartSheet(ws)
+    const { futures, frontMonthPrice } = parseBarchartSheet(ws)
 
     if (futures.length === 0) {
       return NextResponse.json({ error: "No valid price rows found in the file" }, { status: 400 })
@@ -89,18 +139,36 @@ export async function POST(req: NextRequest) {
         ? "corn_futures"
         : "class_iii_futures"
 
-    await supabase.from("market_data").upsert(
-      {
-        data_date: dateStr,
-        [fieldName]: futures,
-        source: "barchart_excel",
-      },
-      { onConflict: "data_date" }
-    )
+    // For Class III, also save the front-month close as the current announced price
+    // and recalculate dairy margin if feed cost is available
+    const upsertData: Record<string, unknown> = {
+      data_date: dateStr,
+      [fieldName]: futures,
+      source: "barchart_excel",
+    }
+
+    if (type === "class_iii" && frontMonthPrice != null) {
+      upsertData.class_iii_price = frontMonthPrice
+
+      // Fetch existing feed cost to recalculate margin
+      const { data: existing } = await supabase
+        .from("market_data")
+        .select("feed_cost_per_cwt")
+        .eq("data_date", dateStr)
+        .single()
+
+      const feedCost = existing?.feed_cost_per_cwt ?? null
+      if (feedCost != null) {
+        upsertData.dairy_margin = Math.round((frontMonthPrice - feedCost) * 10000) / 10000
+      }
+    }
+
+    await supabase.from("market_data").upsert(upsertData, { onConflict: "data_date" })
 
     return NextResponse.json({
       success: true,
       rows: futures.length,
+      class_iii_price: type === "class_iii" ? frontMonthPrice : undefined,
       sample: futures.slice(0, 3),
     })
   } catch (err) {

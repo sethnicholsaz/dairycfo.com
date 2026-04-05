@@ -68,7 +68,8 @@ export function MarketDataAdmin({ recent }: Props) {
       const res = await fetch("/api/market-data/upload", { method: "POST", body: fd })
       const data = await res.json()
       if (res.ok) {
-        setUploadMsg(`✓ Imported ${data.rows} rows. Sample: ${data.sample?.map((r: {month:string;price:number}) => `${r.month} $${r.price}`).join(", ")}`)
+        const classIiiNote = data.class_iii_price != null ? ` · Class III: $${data.class_iii_price.toFixed(2)}` : ""
+        setUploadMsg(`✓ Imported ${data.rows} rows${classIiiNote}. Sample: ${data.sample?.map((r: {month:string;price:number}) => `${r.month} $${r.price}`).join(", ")}`)
         setUploadFile(null)
       } else {
         setUploadMsg("Error: " + data.error)
