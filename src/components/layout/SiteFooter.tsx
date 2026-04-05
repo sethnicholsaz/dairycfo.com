@@ -36,7 +36,7 @@ export function SiteFooter() {
             <p className="text-xs font-semibold mb-4" style={{ color: "#8a9080", letterSpacing: "0.06em", textTransform: "uppercase" }}>Account</p>
             <ul className="space-y-3">
               {[
-                { href: "/subscribe",   label: "Create account" },
+                { href: "/subscribe",   label: "Subscribe free" },
                 { href: "/unsubscribe", label: "Unsubscribe" },
               ].map(({ href, label }) => (
                 <li key={href}>

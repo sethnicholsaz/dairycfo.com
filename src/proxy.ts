@@ -18,7 +18,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Admin protection
-  if (ADMIN_ROUTES.some((r) => pathname.startsWith(r))) {
+  if (ADMIN_ROUTES.some((r) => pathname.startsWith(r)) && pathname !== "/admin/login") {
     const adminToken = request.cookies.get("dcfo_admin")?.value
     if (!adminToken || adminToken !== ADMIN_SECRET) {
       const loginUrl = new URL("/admin/login", request.url)
