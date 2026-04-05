@@ -189,6 +189,10 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      if (type === "class_iv" && frontMonthPrice != null) {
+        upsertData.class_iv_price = frontMonthPrice
+      }
+
       await supabase.from("market_data").upsert(upsertData, { onConflict: "data_date" })
       results.push({ sheet: sheetName, type, rows: futures.length, frontMonthPrice })
     }
