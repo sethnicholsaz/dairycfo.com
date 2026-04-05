@@ -19,15 +19,35 @@ interface ParseResult {
   frontMonthPrice: number | null
 }
 
-function normalizeMonth(raw: string): string | null {
-  const s = raw.trim()
-  if (!s) return null
+// Convert Excel serial date number to YYYY-MM
+function excelSerialToYearMonth(serial: number): string | null {
+  // Excel epoch: Dec 30, 1899. Adjust for Lotus 1-2-3 leap year bug (serial > 59).
+  const utcMs = (serial - 25569) * 86400 * 1000
+  const d = new Date(utcMs)
+  if (isNaN(d.getTime())) return null
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`
+}
+
+function normalizeMonth(cell: XLSX.CellObject): string | null {
+  // Use the formatted display value first (xlsx sets cell.w when a format exists)
+  const display = cell.w ? cell.w.trim() : ""
+  const raw = String(cell.v ?? "").trim()
+
+  // If cell value is a number, it's an Excel serial date
+  if (cell.t === "n" || (cell.t !== "s" && !isNaN(Number(raw)))) {
+    const serial = Number(raw)
+    if (serial > 40000) return excelSerialToYearMonth(serial) // sanity: must be post-2009
+  }
+
+  // Use display string if it looks like a month ("Apr 2026", "April 2026", "2026-04")
+  const src = display || raw
+  if (!src) return null
 
   // Already YYYY-MM
-  if (/^\d{4}-\d{2}$/.test(s)) return s
+  if (/^\d{4}-\d{2}$/.test(src)) return src
 
   // "Apr 2026" or "Apr 26"
-  const match = s.match(/([A-Za-z]+)\s+(\d{2,4})/)
+  const match = src.match(/([A-Za-z]+)\s+(\d{2,4})/)
   if (match) {
     const year = match[2].length === 2 ? "20" + match[2] : match[2]
     const d = new Date(`${match[1]} 1, ${year}`)
@@ -36,8 +56,8 @@ function normalizeMonth(raw: string): string | null {
     }
   }
 
-  // Fallback: try Date constructor
-  const d = new Date(s)
+  // Fallback: try Date constructor on display string
+  const d = new Date(src)
   if (!isNaN(d.getTime())) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
   }
@@ -69,7 +89,7 @@ function parseBarchartSheet(ws: XLSX.WorkSheet): ParseResult {
 
       if (!monthCell || !closeCell) continue
 
-      const month = normalizeMonth(String(monthCell.v ?? ""))
+      const month = normalizeMonth(monthCell)
       const price = parseFloat(String(closeCell.v ?? ""))
 
       if (!month || isNaN(price) || price <= 0) continue
@@ -83,7 +103,7 @@ function parseBarchartSheet(ws: XLSX.WorkSheet): ParseResult {
 
       if (!monthCell || !priceCell) continue
 
-      const month = normalizeMonth(String(monthCell.v ?? ""))
+      const month = normalizeMonth(monthCell)
       const price = parseFloat(String(priceCell.v ?? ""))
 
       if (!month || isNaN(price) || price <= 0) continue
@@ -112,7 +132,7 @@ export async function POST(req: NextRequest) {
   const fd = await req.formData()
   const file = fd.get("file") as File | null
   const type = (fd.get("type") as string) ?? "class_iii" // class_iii | class_iv | corn
-  const dateStr = (fd.get("date") as string) ?? new Date().toISOString().split("T")[0]
+  const explicitDate = fd.get("date") as string | null
 
   if (!file || file.size === 0) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 })
@@ -131,7 +151,20 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createServiceClient()
 
-    // Upsert market_data row for today, merging futures column
+    // Use explicit date if provided, otherwise merge onto the most recent existing row
+    // so Barchart futures land on the same row as USDA spot prices
+    let dateStr = explicitDate
+    if (!dateStr) {
+      const { data: latest } = await supabase
+        .from("market_data")
+        .select("data_date")
+        .order("data_date", { ascending: false })
+        .limit(1)
+        .single()
+      dateStr = latest?.data_date ?? new Date().toISOString().split("T")[0]
+    }
+
+    // Upsert market_data row, merging futures column
     const fieldName =
       type === "class_iv"
         ? "class_iv_futures"
