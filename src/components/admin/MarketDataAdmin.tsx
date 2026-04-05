@@ -31,7 +31,6 @@ function fmt(v: number | null) {
 export function MarketDataAdmin({ recent }: Props) {
   const [fetching, setFetching] = useState(false)
   const [fetchMsg, setFetchMsg] = useState("")
-  const [uploadType, setUploadType] = useState("class_iii")
   const [uploading, setUploading] = useState(false)
   const [uploadMsg, setUploadMsg] = useState("")
   const [uploadFile, setUploadFile] = useState<File | null>(null)
@@ -62,14 +61,14 @@ export function MarketDataAdmin({ recent }: Props) {
 
     const fd = new FormData()
     fd.append("file", uploadFile)
-    fd.append("type", uploadType)
 
     try {
       const res = await fetch("/api/market-data/upload", { method: "POST", body: fd })
       const data = await res.json()
       if (res.ok) {
-        const classIiiNote = data.class_iii_price != null ? ` · Class III: $${data.class_iii_price.toFixed(2)}` : ""
-        setUploadMsg(`✓ Imported ${data.rows} rows${classIiiNote}. Sample: ${data.sample?.map((r: {month:string;price:number}) => `${r.month} $${r.price}`).join(", ")}`)
+        const sheets = data.sheets as { sheet: string; type: string; rows: number; frontMonthPrice: number | null }[]
+        const summary = sheets.map((s) => `${s.sheet}: ${s.rows} rows${s.frontMonthPrice ? ` (front month $${s.frontMonthPrice.toFixed(2)})` : ""}`).join(" · ")
+        setUploadMsg(`✓ ${summary}`)
         setUploadFile(null)
       } else {
         setUploadMsg("Error: " + data.error)
@@ -120,27 +119,10 @@ export function MarketDataAdmin({ recent }: Props) {
         </h2>
         <p className="text-sm text-[#6b6348] mb-4">
           Export futures data from Barchart as Excel (.xlsx) using the Excel add-in, then upload here.
-          Front-month close is saved as the current Class III price; full strip stored as the futures curve.
+          Name your sheets <strong>Class III</strong>, <strong>Class IV</strong>, and <strong>Corn</strong> — all three can be in one file.
         </p>
 
         <form onSubmit={uploadFutures} className="space-y-4">
-          <div className="flex gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider mb-1">
-                Data Type
-              </label>
-              <select
-                value={uploadType}
-                onChange={(e) => setUploadType(e.target.value)}
-                className="px-3 py-2 border border-[#d8d2be] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#1c4a2a] bg-white"
-              >
-                <option value="class_iii">Class III Futures</option>
-                <option value="class_iv">Class IV Futures</option>
-                <option value="corn">Corn Futures</option>
-              </select>
-            </div>
-          </div>
-
           <div>
             <label className="block text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider mb-1">
               Excel File
