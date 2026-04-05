@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
-import { resend, FROM_EMAIL, REPLY_TO } from "@/lib/resend"
+import { resend, FROM_EMAIL, REPLY_TO, AUDIENCE_ID } from "@/lib/resend"
 import { renderNewsletterEmail } from "@/lib/email-renderer"
 
 interface Params {
@@ -53,19 +53,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Update failed" }, { status: 500 })
   }
 
-  // Send newsletter to all subscribers
+  // Send newsletter via Resend Broadcast
   if (send && !existing.sent_at) {
-    // Get active subscribers
-    const { data: subscribers } = await supabase
-      .from("subscribers")
-      .select("id, email, name, unsubscribe_token")
-      .is("unsubscribed_at", null)
-
-    if (!subscribers || subscribers.length === 0) {
-      return NextResponse.json({ error: "No active subscribers to send to" }, { status: 400 })
-    }
-
-    // Get latest market data for email
+    // Get latest market data for email rendering
     const { data: marketData } = await supabase
       .from("market_data")
       .select("*")
@@ -73,36 +63,46 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       .limit(1)
       .single()
 
-    let sentCount = 0
-    const batchSize = 50 // Resend batch limit
+    // Render HTML using a placeholder unsubscribe URL —
+    // Resend replaces {{unsubscribe_url}} automatically in broadcasts
+    const html = await renderNewsletterEmail(
+      mdx_content,
+      marketData ?? null,
+      "{{unsubscribe_url}}"
+    )
 
-    for (let i = 0; i < subscribers.length; i += batchSize) {
-      const batch = subscribers.slice(i, i + batchSize)
+    const subject = `${title}${issue_number ? ` — Issue #${issue_number}` : ""}`
 
-      await Promise.allSettled(
-        batch.map(async (sub) => {
-          const unsubscribeUrl = `https://dairycfo.com/api/unsubscribe?token=${sub.unsubscribe_token}`
-          const html = await renderNewsletterEmail(mdx_content, marketData ?? null, unsubscribeUrl)
+    // Create broadcast
+    const { data: broadcast, error: broadcastError } = await resend.broadcasts.create({
+      audienceId: AUDIENCE_ID,
+      from: FROM_EMAIL,
+      replyTo: REPLY_TO,
+      subject,
+      html,
+      name: subject,
+    })
 
-          await resend.emails.send({
-            from: FROM_EMAIL,
-            to: sub.email,
-            replyTo: REPLY_TO,
-            subject: `${title}${issue_number ? ` — Issue #${issue_number}` : ""}`,
-            html,
-          })
-          sentCount++
-        })
-      )
+    if (broadcastError || !broadcast) {
+      console.error("Broadcast create error:", broadcastError)
+      return NextResponse.json({ error: "Failed to create broadcast" }, { status: 500 })
     }
 
-    // Mark as sent
+    // Send the broadcast
+    const { error: sendError } = await resend.broadcasts.send(broadcast.id)
+
+    if (sendError) {
+      console.error("Broadcast send error:", sendError)
+      return NextResponse.json({ error: "Failed to send broadcast" }, { status: 500 })
+    }
+
+    // Mark as sent and store broadcast ID
     await supabase
       .from("newsletters")
       .update({ sent_at: new Date().toISOString() })
       .eq("id", id)
 
-    return NextResponse.json({ success: true, sentCount })
+    return NextResponse.json({ success: true, broadcastId: broadcast.id })
   }
 
   return NextResponse.json({ success: true })

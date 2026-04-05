@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import { createSubscriberToken, COOKIE_NAME } from "@/lib/subscriber"
+import { upsertResendContact, sendWelcomeEmail } from "@/lib/resend"
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,6 +39,10 @@ export async function POST(req: NextRequest) {
       console.error("Subscribe error:", error)
       return NextResponse.json({ error: "Failed to subscribe" }, { status: 500 })
     }
+
+    // Sync to Resend audience + send welcome email (non-blocking)
+    void upsertResendContact(subscriber.email, name?.trim() || null)
+    void sendWelcomeEmail(subscriber.email, name?.trim() || null)
 
     // Set cookie on the response (cookies() from next/headers doesn't work in Route Handlers)
     const token = await createSubscriberToken(subscriber.id, subscriber.email)
