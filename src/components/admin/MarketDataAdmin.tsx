@@ -119,8 +119,8 @@ export function MarketDataAdmin({ recent }: Props) {
           Barchart — Futures Data Upload
         </h2>
         <p className="text-sm text-[#6b6348] mb-4">
-          Export futures data from Barchart as Excel (.xlsx), then upload here.
-          Expected columns: <strong>A = Contract Month</strong>, <strong>B = Last Price</strong>.
+          Export futures data from Barchart as Excel (.xlsx) using the Excel add-in, then upload here.
+          Front-month close is saved as the current Class III price; full strip stored as the futures curve.
         </p>
 
         <form onSubmit={uploadFutures} className="space-y-4">
@@ -188,7 +188,7 @@ export function MarketDataAdmin({ recent }: Props) {
       <div className="bg-white rounded-lg border border-[#d8d2be] overflow-hidden">
         <div className="px-6 py-4 border-b border-[#d8d2be]">
           <h2 className="font-semibold text-[#1c2e1f]">Market Prices</h2>
-          <p className="text-xs text-[#8a8068] mt-0.5">Class III/IV entered manually · Spot prices auto-fetched from CME via USDA</p>
+          <p className="text-xs text-[#8a8068] mt-0.5">Class III from Barchart upload · Spot prices auto-fetched from CME via USDA</p>
         </div>
         {recent.length === 0 ? (
           <div className="px-6 py-10 text-center text-sm text-[#8a8068]">
