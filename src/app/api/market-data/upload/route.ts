@@ -150,20 +150,39 @@ export async function POST(req: NextRequest) {
     if (type === "class_iii" && frontMonthPrice != null) {
       upsertData.class_iii_price = frontMonthPrice
 
-      // Fetch existing feed cost to recalculate margin
-      const { data: existing } = await supabase
+      // Use most recent feed cost (USDA fetch date may differ from upload date)
+      const { data: feedRow } = await supabase
         .from("market_data")
         .select("feed_cost_per_cwt")
-        .eq("data_date", dateStr)
+        .not("feed_cost_per_cwt", "is", null)
+        .order("data_date", { ascending: false })
+        .limit(1)
         .single()
 
-      const feedCost = existing?.feed_cost_per_cwt ?? null
+      const feedCost = feedRow?.feed_cost_per_cwt ?? null
       if (feedCost != null) {
         upsertData.dairy_margin = Math.round((frontMonthPrice - feedCost) * 10000) / 10000
       }
     }
 
     await supabase.from("market_data").upsert(upsertData, { onConflict: "data_date" })
+
+    // After upsert: if Class III was just saved, patch the margin on any recent row
+    // that has feed cost but no margin yet (handles case where USDA fetched first)
+    if (type === "class_iii" && frontMonthPrice != null) {
+      const { data: rows } = await supabase
+        .from("market_data")
+        .select("id, data_date, feed_cost_per_cwt, dairy_margin")
+        .not("feed_cost_per_cwt", "is", null)
+        .is("dairy_margin", null)
+        .order("data_date", { ascending: false })
+        .limit(5)
+
+      for (const row of rows ?? []) {
+        const margin = Math.round((frontMonthPrice - row.feed_cost_per_cwt) * 10000) / 10000
+        await supabase.from("market_data").update({ dairy_margin: margin, class_iii_price: frontMonthPrice }).eq("id", row.id)
+      }
+    }
 
     return NextResponse.json({
       success: true,
