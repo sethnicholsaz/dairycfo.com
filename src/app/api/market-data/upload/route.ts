@@ -2,117 +2,141 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import * as XLSX from "xlsx"
 
-// Supported Barchart Excel formats:
+// All sheets use the Barchart time-series format:
 //
-// Single file, multiple sheets. Sheet name determines data type:
-//   "Class III"  (or contains "III")  → class_iii_futures + class_iii_price
-//   "Class IV"   (or contains "IV")   → class_iv_futures
-//   "Corn"       (or contains "Corn") → corn_futures
+//   Row 0:  "Time Series"  | "LE*0" |      | "LE*1" |       | ...  (contract position labels)
+//   Row 1:  "Date"         | "Symbol" | "Close" | "Symbol" | "Close" | ...
+//   Row 2+: "4/2/2026"     | "LEM26"  | 246.325 | "LEJ26"  | 246.200 | ...
 //
-// Each sheet uses the Barchart Excel add-in format:
-//   Headers include "Contract Date" and "Close" columns
-//   e.g. Quotes | Name | Last | Expiration Date | Contract Date | ... | Close | ...
-//
-// Also supports simple 2-column fallback: A = Contract Month, B = Price
+// Sheet name determines the commodity:
+//   "Class III"     → class_iii
+//   "Class IV"      → class_iv
+//   "Corn"          → corn
+//   "Live Cattle"   → live_cattle
+//   "Feeder Cattle" → feeder_cattle
+//   (any other name → snake_cased sheet name)
 
-interface FuturesRow {
-  month: string
-  price: number
+interface ContractClose {
+  symbol: string
+  close: number
+  position: number
 }
 
-interface ParseResult {
-  futures: FuturesRow[]
-  frontMonthPrice: number | null
+interface DayRow {
+  date: string   // YYYY-MM-DD
+  contracts: ContractClose[]
 }
 
-type MarketType = "class_iii" | "class_iv" | "corn"
-
-// Detect market type from sheet name
-function detectType(sheetName: string): MarketType {
-  const n = sheetName.toLowerCase()
-  if (n.includes("iv") || n.includes("4")) return "class_iv"
+function detectCommodity(sheetName: string): string {
+  const n = sheetName.toLowerCase().trim()
+  if (n.includes("feeder")) return "feeder_cattle"
+  if (n.includes("live") || (n.includes("cattle") && !n.includes("feeder"))) return "live_cattle"
+  if (n.includes("class iv") || n.includes("class 4") || n === "iv") return "class_iv"
+  if (n.includes("class iii") || n.includes("class 3") || n === "iii") return "class_iii"
   if (n.includes("corn")) return "corn"
-  return "class_iii" // default / "iii" / "3"
+  if (n.includes("soy") || n.includes("sbm")) return "soybean_meal"
+  if (n.includes("wheat")) return "wheat"
+  if (n.includes("butter")) return "butter"
+  if (n.includes("cheese")) return "cheese"
+  return n.replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "")
 }
 
-// Convert Excel serial date number to YYYY-MM
-function excelSerialToYearMonth(serial: number): string | null {
+// Convert Excel serial date to YYYY-MM-DD
+function excelSerialToDate(serial: number): string | null {
   const utcMs = (serial - 25569) * 86400 * 1000
   const d = new Date(utcMs)
   if (isNaN(d.getTime())) return null
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`
 }
 
-function normalizeMonth(cell: XLSX.CellObject): string | null {
-  const display = cell.w ? cell.w.trim() : ""
-  const raw = String(cell.v ?? "").trim()
+function parseDate(cell: XLSX.CellObject): string | null {
+  if (!cell) return null
 
-  // Numeric cell = Excel serial date
-  if (cell.t === "n" || (cell.t !== "s" && !isNaN(Number(raw)))) {
-    const serial = Number(raw)
-    if (serial > 40000) return excelSerialToYearMonth(serial)
+  // Numeric = Excel serial date
+  if (cell.t === "n" && typeof cell.v === "number" && cell.v > 40000) {
+    return excelSerialToDate(cell.v)
   }
 
-  const src = display || raw
+  // Use formatted display string first, then raw value
+  const src = (cell.w ?? String(cell.v ?? "")).trim()
   if (!src) return null
 
-  if (/^\d{4}-\d{2}$/.test(src)) return src
-
-  const match = src.match(/([A-Za-z]+)\s+(\d{2,4})/)
-  if (match) {
-    const year = match[2].length === 2 ? "20" + match[2] : match[2]
-    const d = new Date(`${match[1]} 1, ${year}`)
-    if (!isNaN(d.getTime())) {
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
-    }
+  // M/D/YYYY or MM/DD/YYYY
+  const slashMatch = src.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (slashMatch) {
+    const [, m, d, y] = slashMatch
+    return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`
   }
+
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(src)) return src
 
   const d = new Date(src)
   if (!isNaN(d.getTime())) {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
   }
 
   return null
 }
 
-function parseBarchartSheet(ws: XLSX.WorkSheet): ParseResult {
+function parseTimeSeriesSheet(ws: XLSX.WorkSheet): DayRow[] {
   const range = XLSX.utils.decode_range(ws["!ref"] ?? "A1")
+  const rows: DayRow[] = []
 
-  const headers: string[] = []
-  for (let c = range.s.c; c <= range.e.c; c++) {
-    const cell = ws[XLSX.utils.encode_cell({ r: range.s.r, c })]
-    headers.push(cell ? String(cell.v ?? "").trim() : "")
-  }
-
-  const contractDateCol = headers.findIndex((h) => h === "Contract Date")
-  const closeCol = headers.findIndex((h) => h === "Close")
-
-  const rows: FuturesRow[] = []
-
-  if (contractDateCol !== -1 && closeCol !== -1) {
-    for (let r = range.s.r + 1; r <= range.e.r; r++) {
-      const monthCell = ws[XLSX.utils.encode_cell({ r, c: contractDateCol })]
-      const closeCell = ws[XLSX.utils.encode_cell({ r, c: closeCol })]
-      if (!monthCell || !closeCell) continue
-      const month = normalizeMonth(monthCell)
-      const price = parseFloat(String(closeCell.v ?? ""))
-      if (!month || isNaN(price) || price <= 0) continue
-      rows.push({ month, price })
-    }
-  } else {
-    for (let r = range.s.r + 1; r <= range.e.r; r++) {
-      const monthCell = ws[XLSX.utils.encode_cell({ r, c: 0 })]
-      const priceCell = ws[XLSX.utils.encode_cell({ r, c: 1 })]
-      if (!monthCell || !priceCell) continue
-      const month = normalizeMonth(monthCell)
-      const price = parseFloat(String(priceCell.v ?? ""))
-      if (!month || isNaN(price) || price <= 0) continue
-      rows.push({ month, price })
+  // Find the header row containing "Date" in column 0
+  let headerRow = -1
+  for (let r = range.s.r; r <= Math.min(range.s.r + 4, range.e.r); r++) {
+    const cell = ws[XLSX.utils.encode_cell({ r, c: 0 })]
+    if (cell && String(cell.v ?? "").trim().toLowerCase() === "date") {
+      headerRow = r
+      break
     }
   }
+  if (headerRow === -1) return rows
 
-  rows.sort((a, b) => a.month.localeCompare(b.month))
-  return { futures: rows, frontMonthPrice: rows.length > 0 ? rows[0].price : null }
+  // Map column indices: find pairs of (Symbol, Close)
+  // Headers look like: Date | Symbol | Close | Symbol | Close | ...
+  const symbolCols: number[] = []
+  const closeCols: number[] = []
+  for (let c = range.s.c + 1; c <= range.e.c; c++) {
+    const cell = ws[XLSX.utils.encode_cell({ r: headerRow, c })]
+    const val = String(cell?.v ?? "").trim().toLowerCase()
+    if (val === "symbol") symbolCols.push(c)
+    else if (val === "close") closeCols.push(c)
+  }
+
+  if (closeCols.length === 0) return rows
+
+  // Parse data rows
+  for (let r = headerRow + 1; r <= range.e.r; r++) {
+    const dateCell = ws[XLSX.utils.encode_cell({ r, c: 0 })]
+    if (!dateCell) continue
+
+    const date = parseDate(dateCell)
+    if (!date) continue
+
+    const contracts: ContractClose[] = []
+    for (let i = 0; i < closeCols.length; i++) {
+      const closeCell = ws[XLSX.utils.encode_cell({ r, c: closeCols[i] })]
+      const close = parseFloat(String(closeCell?.v ?? ""))
+      if (isNaN(close) || close <= 0) continue
+
+      // Try to get symbol from the corresponding symbol column
+      let symbol = ""
+      if (symbolCols[i] !== undefined) {
+        const symCell = ws[XLSX.utils.encode_cell({ r, c: symbolCols[i] })]
+        symbol = String(symCell?.v ?? "").trim()
+      }
+
+      contracts.push({ symbol, close, position: i })
+    }
+
+    if (contracts.length > 0) {
+      rows.push({ date, contracts })
+    }
+  }
+
+  return rows
 }
 
 export async function POST(req: NextRequest) {
@@ -127,7 +151,6 @@ export async function POST(req: NextRequest) {
 
   const fd = await req.formData()
   const file = fd.get("file") as File | null
-  const explicitDate = fd.get("date") as string | null
 
   if (!file || file.size === 0) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 })
@@ -136,92 +159,96 @@ export async function POST(req: NextRequest) {
   try {
     const buffer = Buffer.from(await file.arrayBuffer())
     const workbook = XLSX.read(buffer, { type: "buffer" })
-
     const supabase = await createServiceClient()
 
-    // Resolve target date once for all sheets
-    let dateStr = explicitDate
-    if (!dateStr) {
-      const { data: latest } = await supabase
-        .from("market_data")
-        .select("data_date")
-        .order("data_date", { ascending: false })
-        .limit(1)
-        .single()
-      dateStr = latest?.data_date ?? new Date().toISOString().split("T")[0]
-    }
-
-    const results: { sheet: string; type: MarketType; rows: number; frontMonthPrice: number | null }[] = []
-    let class_iii_price: number | null = null
+    const results: { sheet: string; commodity: string; dates: number; latestDate: string | null; frontMonthPrice: number | null }[] = []
 
     for (const sheetName of workbook.SheetNames) {
       const ws = workbook.Sheets[sheetName]
-      const { futures, frontMonthPrice } = parseBarchartSheet(ws)
-      if (futures.length === 0) continue
+      const dayRows = parseTimeSeriesSheet(ws)
+      if (dayRows.length === 0) continue
 
-      const type = detectType(sheetName)
-      const fieldName =
-        type === "class_iv" ? "class_iv_futures" :
-        type === "corn"     ? "corn_futures" :
-                              "class_iii_futures"
+      const commodity = detectCommodity(sheetName)
 
-      const upsertData: Record<string, unknown> = {
-        data_date: dateStr,
-        [fieldName]: futures,
-        source: "barchart_excel",
-      }
+      // Upsert each date row into commodity_closes
+      const upsertRows = dayRows.map((row) => ({
+        price_date: row.date,
+        commodity,
+        contracts: row.contracts,
+      }))
 
-      if (type === "class_iii" && frontMonthPrice != null) {
-        class_iii_price = frontMonthPrice
-        upsertData.class_iii_price = frontMonthPrice
+      await supabase
+        .from("commodity_closes")
+        .upsert(upsertRows, { onConflict: "price_date,commodity" })
 
-        const { data: feedRow } = await supabase
-          .from("market_data")
-          .select("feed_cost_per_cwt")
-          .not("feed_cost_per_cwt", "is", null)
-          .order("data_date", { ascending: false })
-          .limit(1)
-          .single()
+      // Most recent date = latest in the uploaded data
+      const sorted = [...dayRows].sort((a, b) => b.date.localeCompare(a.date))
+      const latest = sorted[0]
+      const frontMonthPrice = latest?.contracts[0]?.close ?? null
+      const latestDate = latest?.date ?? null
 
-        const feedCost = feedRow?.feed_cost_per_cwt ?? null
-        if (feedCost != null) {
-          upsertData.dairy_margin = Math.round((frontMonthPrice - feedCost) * 10000) / 10000
+      // Sync front-month price into market_data for dairy commodities
+      if (frontMonthPrice != null && latestDate != null) {
+        const marketField =
+          commodity === "class_iii" ? "class_iii_price" :
+          commodity === "class_iv"  ? "class_iv_price" :
+          commodity === "corn"      ? "corn_price" :
+          null
+
+        if (marketField) {
+          // Upsert onto the most recent market_data row
+          const { data: latestMarket } = await supabase
+            .from("market_data")
+            .select("data_date, feed_cost_per_cwt")
+            .order("data_date", { ascending: false })
+            .limit(1)
+            .single()
+
+          const targetDate = latestMarket?.data_date ?? latestDate
+          const upsertData: Record<string, unknown> = {
+            data_date: targetDate,
+            [marketField]: frontMonthPrice,
+            source: "barchart_excel",
+          }
+
+          // Recalculate dairy margin if we just updated Class III
+          if (commodity === "class_iii") {
+            const feedCost = latestMarket?.feed_cost_per_cwt ?? null
+            if (feedCost != null) {
+              upsertData.dairy_margin = Math.round((frontMonthPrice - feedCost) * 10000) / 10000
+            }
+          }
+
+          await supabase.from("market_data").upsert(upsertData, { onConflict: "data_date" })
+
+          // Back-fill margin on rows missing it
+          if (commodity === "class_iii") {
+            const { data: unfilled } = await supabase
+              .from("market_data")
+              .select("id, feed_cost_per_cwt")
+              .not("feed_cost_per_cwt", "is", null)
+              .is("dairy_margin", null)
+              .order("data_date", { ascending: false })
+              .limit(5)
+
+            for (const row of unfilled ?? []) {
+              await supabase.from("market_data").update({
+                dairy_margin: Math.round((frontMonthPrice - row.feed_cost_per_cwt) * 10000) / 10000,
+                class_iii_price: frontMonthPrice,
+              }).eq("id", row.id)
+            }
+          }
         }
       }
 
-      if (type === "class_iv" && frontMonthPrice != null) {
-        upsertData.class_iv_price = frontMonthPrice
-      }
-
-      await supabase.from("market_data").upsert(upsertData, { onConflict: "data_date" })
-      results.push({ sheet: sheetName, type, rows: futures.length, frontMonthPrice })
+      results.push({ sheet: sheetName, commodity, dates: dayRows.length, latestDate, frontMonthPrice })
     }
 
     if (results.length === 0) {
-      return NextResponse.json({ error: "No valid price rows found in any sheet" }, { status: 400 })
+      return NextResponse.json({ error: "No valid data found in any sheet" }, { status: 400 })
     }
 
-    // Back-fill margin on rows that have feed cost but no margin
-    if (class_iii_price != null) {
-      const { data: unfilled } = await supabase
-        .from("market_data")
-        .select("id, feed_cost_per_cwt")
-        .not("feed_cost_per_cwt", "is", null)
-        .is("dairy_margin", null)
-        .order("data_date", { ascending: false })
-        .limit(5)
-
-      for (const row of unfilled ?? []) {
-        const margin = Math.round((class_iii_price - row.feed_cost_per_cwt) * 10000) / 10000
-        await supabase.from("market_data").update({ dairy_margin: margin, class_iii_price }).eq("id", row.id)
-      }
-    }
-
-    return NextResponse.json({
-      success: true,
-      sheets: results,
-      class_iii_price,
-    })
+    return NextResponse.json({ success: true, sheets: results })
   } catch (err) {
     console.error("Excel parse error:", err)
     return NextResponse.json({ error: "Failed to parse Excel file" }, { status: 500 })

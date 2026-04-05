@@ -66,8 +66,8 @@ export function MarketDataAdmin({ recent }: Props) {
       const res = await fetch("/api/market-data/upload", { method: "POST", body: fd })
       const data = await res.json()
       if (res.ok) {
-        const sheets = data.sheets as { sheet: string; type: string; rows: number; frontMonthPrice: number | null }[]
-        const summary = sheets.map((s) => `${s.sheet}: ${s.rows} rows${s.frontMonthPrice ? ` (front month $${s.frontMonthPrice.toFixed(2)})` : ""}`).join(" · ")
+        const sheets = data.sheets as { sheet: string; commodity: string; dates: number; latestDate: string | null; frontMonthPrice: number | null }[]
+        const summary = sheets.map((s) => `${s.sheet}: ${s.dates} days${s.frontMonthPrice ? ` · front month $${s.frontMonthPrice.toFixed(2)}` : ""}`).join("  |  ")
         setUploadMsg(`✓ ${summary}`)
         setUploadFile(null)
       } else {
@@ -119,7 +119,7 @@ export function MarketDataAdmin({ recent }: Props) {
         </h2>
         <p className="text-sm text-[#6b6348] mb-4">
           Export futures data from Barchart as Excel (.xlsx) using the Excel add-in, then upload here.
-          Name your sheets <strong>Class III</strong>, <strong>Class IV</strong>, and <strong>Corn</strong> — all three can be in one file.
+          Upload one .xlsx with one sheet per commodity. Sheet names: <strong>Class III</strong>, <strong>Class IV</strong>, <strong>Corn</strong>, <strong>Live Cattle</strong>, <strong>Feeder Cattle</strong>, etc. Each sheet must be in Barchart time-series format (Date + Symbol/Close columns).
         </p>
 
         <form onSubmit={uploadFutures} className="space-y-4">
