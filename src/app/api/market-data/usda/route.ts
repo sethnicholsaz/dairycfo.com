@@ -70,8 +70,9 @@ export async function POST(req: NextRequest) {
   try {
     return NextResponse.json(await runFetch())
   } catch (err) {
-    console.error("USDA fetch error:", err)
-    return NextResponse.json({ error: "Fetch failed" }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error("USDA fetch error:", msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
 
@@ -84,7 +85,8 @@ export async function GET(req: NextRequest) {
   try {
     return NextResponse.json(await runFetch())
   } catch (err) {
-    console.error("USDA fetch error:", err)
-    return NextResponse.json({ error: "Fetch failed" }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error("USDA fetch error:", msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
