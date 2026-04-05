@@ -62,7 +62,7 @@ export function SubscribeInlineForm({ light = false, large = false }: { light?: 
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
-          placeholder="your@creamery.com"
+          placeholder="you@company.com"
           className="flex-1 bg-transparent border-none outline-none text-sm"
           style={{ color: inputColor }}
         />

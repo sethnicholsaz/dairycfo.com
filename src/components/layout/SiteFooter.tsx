@@ -13,7 +13,7 @@ export function SiteFooter() {
               <span style={{ fontWeight: 600, fontSize: "15px", color: "#e8f0e4", letterSpacing: "-0.01em" }}>DairyCFO</span>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: "#6a8870", maxWidth: "280px" }}>
-              Bringing the heartbeat of the dairy farm to creamery professionals. Market data, operations insight, and financial intelligence.
+              What's happening on the farm — explained for the professionals who serve the dairy industry.
             </p>
           </div>
 
@@ -49,7 +49,7 @@ export function SiteFooter() {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 pt-8" style={{ borderTop: "1px solid #2a4a34" }}>
           <p className="text-xs" style={{ color: "#4a6a54" }}>© {new Date().getFullYear()} DairyCFO. All rights reserved.</p>
-          <p className="text-xs" style={{ color: "#4a6a54" }}>Built for creamery professionals.</p>
+          <p className="text-xs" style={{ color: "#4a6a54" }}>Built for the dairy trade.</p>
         </div>
       </div>
     </footer>

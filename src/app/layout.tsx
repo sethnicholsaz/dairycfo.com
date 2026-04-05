@@ -5,9 +5,9 @@ import "./globals.css"
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
 
 export const metadata: Metadata = {
-  title: "DairyCFO | The Dairy Industry Newsletter for Creameries",
+  title: "DairyCFO | The Dairy Industry Newsletter",
   description:
-    "Bridging the gap between dairy farms and creameries. Market data, farm operations insights, and industry intelligence — delivered straight to creamery professionals.",
+    "What's happening on the farm — explained for the professionals who serve the dairy industry. Market data, farm operations insights, and financial intelligence, delivered weekly.",
   openGraph: {
     title: "DairyCFO Newsletter",
     description: "The heartbeat of the dairy farm, delivered to your inbox.",

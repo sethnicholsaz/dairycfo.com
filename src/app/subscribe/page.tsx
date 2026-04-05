@@ -25,7 +25,7 @@ export default function SubscribePage() {
               Subscribe to DairyCFO
             </h1>
             <p className="leading-relaxed" style={{ color: "#4a5046", fontSize: "1.0625rem" }}>
-              Free weekly market data and farm operations intelligence for creamery teams.
+              Free weekly market data and farm operations intelligence for dairy industry professionals.
             </p>
           </div>
 

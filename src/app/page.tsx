@@ -20,7 +20,7 @@ export default async function HomePage() {
               <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full" style={{ background: "#f0ede6", border: "1px solid #d8d2be" }}>
                 <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#c8902a" }} />
                 <span className="text-sm font-medium" style={{ color: "#4a5046", letterSpacing: "0.04em", fontSize: "11px", textTransform: "uppercase" }}>
-                  For creamery professionals
+                  For dairy industry professionals
                 </span>
               </div>
 
@@ -42,7 +42,7 @@ export default async function HomePage() {
                 style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)", color: "#4a5046", maxWidth: "480px", letterSpacing: "-0.01em" }}
               >
                 Market prices, farm operations intel, and financial context —
-                so creamery teams truly understand the supply chain behind their milk.
+                so dairy industry professionals understand the farms they work with.
               </p>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
