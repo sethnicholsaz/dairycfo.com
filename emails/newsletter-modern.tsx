@@ -115,8 +115,8 @@ export default function NewsletterModern({
 
               {/* Body */}
               <Section className="px-32 py-28">
-                <Text
-                  className="text-15 text-[#2d2a1e] leading-relaxed m-0"
+                <div
+                  style={{ fontSize: "15px", color: "#2d2a1e", lineHeight: "1.7" }}
                   dangerouslySetInnerHTML={{ __html: bodyHtml }}
                 />
               </Section>
@@ -148,11 +148,8 @@ export default function NewsletterModern({
             {/* Footer */}
             <Section className="px-8 pt-20 pb-32">
               <Text className="text-12 text-[#8a9080] text-center m-0">
-                You subscribed at{" "}
-                <Link href="https://dairycfo.com" className="text-[#8a9080]">
-                  dairycfo.com
-                </Link>
-                . We never sell your address.
+                DairyCFO helps creamery teams understand the farms behind their milk supply —
+                prices, operations, and the decisions dairymen make every day.
               </Text>
               <Text className="text-11 text-[#a8a090] text-center m-0 mt-8">
                 <Link href={unsubscribeUrl} className="text-[#a8a090]">
@@ -176,7 +173,7 @@ NewsletterModern.PreviewProps = {
   issueDate: "April 2026",
   title: "Class III Drops as Cheese Inventories Build Ahead of Spring",
   previewText: "Class III prices fell this week as cold storage cheese stocks rose — here's what it means for your milk check.",
-  bodyHtml: `<p>Spring flush is arriving on schedule across the Upper Midwest, and cheese plants are running hard to absorb the extra milk. Cold storage inventories built faster than expected this week, putting downward pressure on Class III.</p><p>For creameries buying milk on Class III formulas, this is a short-term tailwind — but the futures strip suggests the market expects a recovery by late Q3.</p><h2>What to Watch</h2><p>Keep an eye on the butter market. Class IV has held more stable than Class III this cycle, which is unusual. If butter breaks below $2.50/lb, it will drag Class IV down and compress the spread.</p>`,
+  bodyHtml: `<p>Every spring, cows eat fresh pasture grass and their bodies respond the way you'd expect — more milk, more butterfat, more everything. Dairymen call it spring flush, and it happens like clockwork from about March through May across most of the country.</p><p>For the creamery, spring flush means more raw milk hitting the dock at lower spot prices. For the farmer, it means the Class III price — the one that determines most of their milk check — tends to soften as supply outpaces demand.</p><h2>Why Does This Affect Your Cheese Price?</h2><p>Class III is the federal milk marketing order price tied directly to cheese. When cheese plants receive more milk than they can move, cold storage builds up. When storage builds, the spot price on the CME drops. When spot drops, the announced Class III price follows about 6 weeks later. That's the lag you'll sometimes hear dairymen grumbling about.</p>`,
   marketPrices: [
     { label: "Class III", value: "$17.84", unit: "/cwt" },
     { label: "Class IV", value: "$18.20", unit: "/cwt" },

@@ -85,7 +85,7 @@ export default function NewsletterEditorial({
                 DairyCFO
               </Text>
               <Text className="text-12 text-[#c8902a] tracking-widest uppercase m-0 font-sans mt-4">
-                Intelligence for Creamery Teams
+                What's Happening on the Farm
               </Text>
             </Section>
 
@@ -130,8 +130,8 @@ export default function NewsletterEditorial({
 
             {/* Body content */}
             <Section className="bg-white px-32 py-32">
-              <Text
-                className="text-16 text-[#2d2a1e] leading-relaxed m-0"
+              <div
+                style={{ fontSize: "16px", color: "#2d2a1e", lineHeight: "1.7" }}
                 dangerouslySetInnerHTML={{ __html: bodyHtml }}
               />
             </Section>
@@ -169,8 +169,8 @@ export default function NewsletterEditorial({
             </Section>
             <Section className="bg-[#1c2e1f] px-32 py-24">
               <Text className="text-12 text-[#8ab89a] m-0 font-sans leading-relaxed">
-                You're receiving DairyCFO because you subscribed at dairycfo.com.
-                We will never sell your email address.
+                DairyCFO helps creamery teams understand what's happening on the dairy farms
+                that supply their milk. Written by someone who's been on both sides of the tank.
               </Text>
               <Text className="text-11 text-[#4a6050] m-0 mt-12 font-sans">
                 <Link href={unsubscribeUrl} className="text-[#6a8870] no-underline">
@@ -200,7 +200,7 @@ NewsletterEditorial.PreviewProps = {
   issueDate: "April 2026",
   title: "Class III Drops as Cheese Inventories Build Ahead of Spring",
   previewText: "Class III prices fell this week as cold storage cheese stocks rose — here's what it means for your milk check.",
-  bodyHtml: `<p>Spring flush is arriving on schedule across the Upper Midwest, and cheese plants are running hard to absorb the extra milk. Cold storage inventories built faster than expected this week, putting downward pressure on Class III.</p><p>For creameries buying milk on Class III formulas, this is a short-term tailwind — but the futures strip suggests the market expects a recovery by late Q3.</p><h2>What to Watch</h2><p>Keep an eye on the butter market. Class IV has held more stable than Class III this cycle, which is unusual. If butter breaks below $2.50/lb, it will drag Class IV down and compress the spread.</p>`,
+  bodyHtml: `<p>Every spring, cows eat fresh pasture grass and their bodies respond the way you'd expect — more milk, more butterfat, more everything. Dairymen call it spring flush, and it happens like clockwork from about March through May across most of the country.</p><p>For the creamery, spring flush means more raw milk hitting the dock at lower spot prices. For the farmer, it means the Class III price — the one that determines most of their milk check — tends to soften as supply outpaces demand.</p><h2>Why Does This Affect Your Cheese Price?</h2><p>Class III is the federal milk marketing order price tied directly to cheese. When cheese plants receive more milk than they can move, cold storage builds up. When storage builds, the spot price on the CME drops. When spot drops, the announced Class III price follows about 6 weeks later. That's the lag you'll sometimes hear dairymen grumbling about.</p><p>This week that lag caught up — Class III fell to $17.84/cwt, down $0.22 from last month's announcement.</p>`,
   marketPrices: [
     { label: "Class III", value: "$17.84", unit: "/cwt" },
     { label: "Class IV", value: "$18.20", unit: "/cwt" },

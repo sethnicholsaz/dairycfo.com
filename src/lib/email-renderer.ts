@@ -2,7 +2,7 @@ import { render } from "@react-email/components"
 import { createElement } from "react"
 
 // Import whichever template is active — swap this to change the newsletter look
-import NewsletterData from "../../emails/newsletter-data"
+import NewsletterEditorial from "../../emails/newsletter-editorial"
 
 interface MarketData {
   data_date: string
@@ -77,14 +77,13 @@ export async function renderNewsletterEmail(
     .join("\n")
 
   const html = await render(
-    createElement(NewsletterData, {
+    createElement(NewsletterEditorial, {
       issueNumber: meta.issueNumber ?? 1,
       issueDate,
       title: meta.title,
       previewText: meta.title,
       bodyHtml,
       marketPrices,
-      futures,
       unsubscribeUrl,
     })
   )
