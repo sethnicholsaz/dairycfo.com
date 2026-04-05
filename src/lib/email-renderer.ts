@@ -27,6 +27,9 @@ export async function renderNewsletterEmail(
     title: string
     issueNumber?: number | null
     publishedAt?: string | null
+    sponsorName?: string | null
+    sponsorMessage?: string | null
+    sponsorUrl?: string | null
   }
 ): Promise<string> {
   const issueDate = meta.publishedAt
@@ -85,6 +88,9 @@ export async function renderNewsletterEmail(
       bodyHtml,
       marketPrices,
       unsubscribeUrl,
+      sponsorName: meta.sponsorName || "",
+      sponsorMessage: meta.sponsorMessage || "",
+      sponsorUrl: meta.sponsorUrl || "",
     })
   )
 

@@ -55,13 +55,24 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   // Send newsletter via Resend Broadcast
   if (send && !existing.sent_at) {
-    // Get latest market data for email rendering
-    const { data: marketData } = await supabase
-      .from("market_data")
-      .select("*")
-      .order("data_date", { ascending: false })
-      .limit(1)
-      .single()
+    // Get latest market data and sponsor placement in parallel
+    const [{ data: marketData }, { data: sponsorPlacement }] = await Promise.all([
+      supabase
+        .from("market_data")
+        .select("*")
+        .order("data_date", { ascending: false })
+        .limit(1)
+        .single(),
+      supabase
+        .from("sponsor_placements")
+        .select("*, sponsors(*)")
+        .eq("newsletter_id", id)
+        .eq("status", "confirmed")
+        .limit(1)
+        .single(),
+    ])
+
+    const sponsor = (sponsorPlacement as any)?.sponsors
 
     // Render HTML using a placeholder unsubscribe URL —
     // Resend replaces {{unsubscribe_url}} automatically in broadcasts
@@ -69,7 +80,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       mdx_content,
       marketData ?? null,
       "{{unsubscribe_url}}",
-      { title, issueNumber: issue_number, publishedAt: existing.published_at }
+      {
+        title,
+        issueNumber: issue_number,
+        publishedAt: existing.published_at,
+        sponsorName: sponsor?.name ?? "",
+        sponsorMessage: sponsor?.tagline ?? "",
+        sponsorUrl: sponsor?.website_url ?? "",
+      }
     )
 
     const subject = `${title}${issue_number ? ` — Issue #${issue_number}` : ""}`
