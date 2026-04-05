@@ -110,17 +110,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── SPONSOR STRIP ─── */}
-      <section style={{ padding: "28px 0", borderTop: "1px solid #d8d2be" }}>
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm" style={{ color: "#4a5046" }}>Reach creamery procurement teams, QA directors, and operations leadership.</p>
-          <Link href="/sponsors" className="btn-outline-green inline-flex items-center gap-2 h-9 px-5 rounded-full text-sm font-semibold">
-            Sponsor an issue <ArrowRight size={13} />
-          </Link>
-        </div>
-      </section>
-
-      <SiteFooter />
+<SiteFooter />
     </div>
   )
 }
