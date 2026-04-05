@@ -110,22 +110,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── CTA ─── */}
-      <section style={{ padding: "96px 0", background: "#1c4a2a" }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="max-w-2xl">
-            <p className="text-sm font-medium mb-4" style={{ color: "#c8902a", letterSpacing: "0.06em", textTransform: "uppercase" }}>Free. Always.</p>
-            <h2 className="font-bold tracking-tight mb-6" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: "#ffffff", letterSpacing: "-0.025em", lineHeight: 1.15 }}>
-              Join creamery teams who understand their milk supply.
-            </h2>
-            <p className="mb-10 leading-relaxed" style={{ color: "#a8c4b0", fontSize: "1.125rem" }}>
-              Weekly market data and farm operations intelligence. Subscribe once, access everything.
-            </p>
-            <SubscribeInlineForm light />
-          </div>
-        </div>
-      </section>
-
       {/* ─── SPONSOR STRIP ─── */}
       <section style={{ padding: "28px 0", borderTop: "1px solid #d8d2be" }}>
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
