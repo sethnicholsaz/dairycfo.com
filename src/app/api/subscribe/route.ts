@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
-import { setSubscriberCookie } from "@/lib/subscriber"
+import { createSubscriberToken, COOKIE_NAME } from "@/lib/subscriber"
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,10 +39,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to subscribe" }, { status: 500 })
     }
 
-    // Set cookie for immediate access
-    await setSubscriberCookie(subscriber.id, subscriber.email)
-
-    return NextResponse.json({ success: true })
+    // Set cookie on the response (cookies() from next/headers doesn't work in Route Handlers)
+    const token = await createSubscriberToken(subscriber.id, subscriber.email)
+    const response = NextResponse.json({ success: true })
+    response.cookies.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
+      path: "/",
+    })
+    return response
   } catch (err) {
     console.error("Subscribe route error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
