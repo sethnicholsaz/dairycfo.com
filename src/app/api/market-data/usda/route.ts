@@ -16,13 +16,11 @@ export async function POST(req: NextRequest) {
       fetchClassPrices(),
     ])
 
-    const today = new Date().toISOString().split("T")[0]
-
     const supabase = await createServiceClient()
 
     const { error } = await supabase.from("market_data").upsert(
       {
-        data_date: today,
+        data_date: products.date,
         class_iii_price: classes.class_iii,
         class_iv_price: classes.class_iv,
         butter_price: products.butter,
@@ -38,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      date: today,
+      date: products.date,
       class_iii: classes.class_iii,
       class_iv: classes.class_iv,
       butter: products.butter,

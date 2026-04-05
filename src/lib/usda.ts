@@ -1,24 +1,34 @@
 // USDA AMS Market News API
 // Docs: https://mymarketnews.ams.usda.gov/mymarketnews-api
-// Register for API key at: https://mymarketnews.ams.usda.gov/user/register
+// Auth: HTTP Basic auth — API key as username, empty password
+//
+// Report IDs used:
+//   1603 — CME Group Daily Cash Trading (Butter, Cheese blocks/barrels, NFDM, Dry Whey)
+//
+// Note: Class III and Class IV announced prices are USDA FMMO-derived prices
+// and are NOT available through this API. They are announced monthly and must
+// be entered manually via the admin market data panel.
 
 const USDA_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
 const USDA_API_KEY = process.env.USDA_AMS_API_KEY
 
-// Report slugs we care about
-// DY_WK100 = National Dairy Products Sales (butter, cheese, NFDM weekly)
-// DY_MO101 = Federal Order Class Prices (Class III, IV announced)
-const REPORT_IDS = {
-  DAIRY_PRODUCTS_SALES: "2928", // National Dairy Products Sales
-  CLASS_PRICES: "2971",         // Federal Order Class Prices
+function basicAuthHeader(): string {
+  const encoded = Buffer.from(`${USDA_API_KEY}:`).toString("base64")
+  return `Basic ${encoded}`
 }
 
-interface UsdaReport {
+// Parses MM/DD/YYYY strings for comparison
+function parseReportDate(s: string): Date {
+  const [m, d, y] = s.split("/").map(Number)
+  return new Date(y, m - 1, d)
+}
+
+interface CmeRow {
   report_date: string
   commodity: string
-  price: number | null
-  unit: string
-  class?: string
+  package?: string
+  close_price?: number
+  "weekly Av"?: number
 }
 
 export async function fetchDairyProductPrices(): Promise<{
@@ -34,12 +44,14 @@ export async function fetchDairyProductPrices(): Promise<{
   }
 
   try {
+    // 1603 returns data for multiple days — fetch enough rows to guarantee
+    // we have all commodities for the most recent trading day
     const res = await fetch(
-      `${USDA_BASE}/reports/${REPORT_IDS.DAIRY_PRODUCTS_SALES}?allSections=true&limit=20`,
+      `${USDA_BASE}/reports/1603?allSections=true&limit=50`,
       {
         headers: {
-          "Accept": "application/json",
-          "X-Api-Key": USDA_API_KEY,
+          Accept: "application/json",
+          Authorization: basicAuthHeader(),
         },
         next: { revalidate: 3600 },
       }
@@ -48,17 +60,33 @@ export async function fetchDairyProductPrices(): Promise<{
     if (!res.ok) throw new Error(`USDA API error: ${res.status}`)
 
     const data = await res.json()
-    const results = data.results ?? []
+    const results: CmeRow[] = data[0]?.results ?? []
 
-    // Parse the most recent prices
-    const latest = results[0] ?? {}
+    if (results.length === 0) {
+      return { butter: null, cheese_blocks: null, cheese_barrels: null, nfdm: null, date: new Date().toISOString().split("T")[0] }
+    }
+
+    // Find the most recent report date
+    const latestDate = results.reduce<string>((best, r) => {
+      if (!best) return r.report_date
+      return parseReportDate(r.report_date) > parseReportDate(best) ? r.report_date : best
+    }, "")
+
+    const latest = results.filter((r) => r.report_date === latestDate)
+
+    const find = (commodity: string, pkg?: string) =>
+      latest.find((r) => r.commodity === commodity && (!pkg || r.package === pkg))?.close_price ?? null
+
+    // Convert MM/DD/YYYY to YYYY-MM-DD for storage
+    const [m, d, y] = latestDate.split("/")
+    const isoDate = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`
 
     return {
-      butter: parseFloat(latest.butter_price ?? "0") || null,
-      cheese_blocks: parseFloat(latest.cheese_40_price ?? "0") || null,
-      cheese_barrels: parseFloat(latest.cheese_500_price ?? "0") || null,
-      nfdm: parseFloat(latest.nfdm_price ?? "0") || null,
-      date: latest.report_date ?? new Date().toISOString().split("T")[0],
+      butter: find("Butter"),
+      cheese_blocks: find("Cheese", "40 pound Block"),
+      cheese_barrels: find("Cheese", "Barrels"),
+      nfdm: find("Nonfat Dry Milk"),
+      date: isoDate,
     }
   } catch (err) {
     console.error("Failed to fetch USDA dairy prices:", err)
@@ -66,42 +94,12 @@ export async function fetchDairyProductPrices(): Promise<{
   }
 }
 
+// Class III and IV are FMMO announced prices — not in the AMS Market News API.
+// They are published monthly by USDA and must be entered manually in the admin.
 export async function fetchClassPrices(): Promise<{
   class_iii: number | null
   class_iv: number | null
   date: string
 }> {
-  if (!USDA_API_KEY) {
-    return { class_iii: null, class_iv: null, date: new Date().toISOString().split("T")[0] }
-  }
-
-  try {
-    const res = await fetch(
-      `${USDA_BASE}/reports/${REPORT_IDS.CLASS_PRICES}?allSections=true&limit=10`,
-      {
-        headers: {
-          "Accept": "application/json",
-          "X-Api-Key": USDA_API_KEY,
-        },
-        next: { revalidate: 3600 * 24 },
-      }
-    )
-
-    if (!res.ok) throw new Error(`USDA API error: ${res.status}`)
-
-    const data = await res.json()
-    const results = data.results ?? []
-
-    const classIII = results.find((r: UsdaReport) => r.class === "Class III")
-    const classIV = results.find((r: UsdaReport) => r.class === "Class IV")
-
-    return {
-      class_iii: classIII?.price ?? null,
-      class_iv: classIV?.price ?? null,
-      date: results[0]?.report_date ?? new Date().toISOString().split("T")[0],
-    }
-  } catch (err) {
-    console.error("Failed to fetch USDA class prices:", err)
-    return { class_iii: null, class_iv: null, date: new Date().toISOString().split("T")[0] }
-  }
+  return { class_iii: null, class_iv: null, date: new Date().toISOString().split("T")[0] }
 }
