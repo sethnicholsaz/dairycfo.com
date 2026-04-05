@@ -1,24 +1,45 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
-import { fetchDairyProductPrices, fetchClassPrices } from "@/lib/usda"
+import { fetchDairyProductPrices, fetchFeedCostInputs, fetchClassPrices } from "@/lib/usda"
 
 async function runFetch() {
-  const [products, classes] = await Promise.all([
+  const [products, feed, classes] = await Promise.all([
     fetchDairyProductPrices(),
+    fetchFeedCostInputs(),
     fetchClassPrices(),
   ])
 
   const supabase = await createServiceClient()
 
+  // Pull most recent Class III to calculate margin (it's entered manually)
+  const { data: latestMarket } = await supabase
+    .from("market_data")
+    .select("class_iii_price")
+    .not("class_iii_price", "is", null)
+    .order("data_date", { ascending: false })
+    .limit(1)
+    .single()
+
+  const class_iii = latestMarket?.class_iii_price ?? null
+  const dairy_margin =
+    class_iii != null && feed.feed_cost_per_cwt != null
+      ? Math.round((class_iii - feed.feed_cost_per_cwt) * 10000) / 10000
+      : null
+
   const { error } = await supabase.from("market_data").upsert(
     {
       data_date: products.date,
-      class_iii_price: classes.class_iii,
-      class_iv_price: classes.class_iv,
+      // CME spot prices
       butter_price: products.butter,
       cheese_blocks_price: products.cheese_blocks,
       cheese_barrels_price: products.cheese_barrels,
       nfdm_price: products.nfdm,
+      // Feed cost inputs
+      corn_price: feed.corn_price,
+      alfalfa_price: feed.alfalfa_price,
+      soybean_meal_price: feed.soybean_meal_price,
+      feed_cost_per_cwt: feed.feed_cost_per_cwt,
+      dairy_margin,
       source: "usda_ams",
     },
     { onConflict: "data_date" }
@@ -29,11 +50,14 @@ async function runFetch() {
   return {
     success: true,
     date: products.date,
-    class_iii: classes.class_iii,
-    class_iv: classes.class_iv,
     butter: products.butter,
     cheese_blocks: products.cheese_blocks,
     nfdm: products.nfdm,
+    corn_price: feed.corn_price,
+    alfalfa_price: feed.alfalfa_price,
+    soybean_meal_price: feed.soybean_meal_price,
+    feed_cost_per_cwt: feed.feed_cost_per_cwt,
+    dairy_margin,
   }
 }
 
@@ -43,7 +67,6 @@ export async function POST(req: NextRequest) {
   if (cronSecret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-
   try {
     return NextResponse.json(await runFetch())
   } catch (err) {
@@ -58,7 +81,6 @@ export async function GET(req: NextRequest) {
   if (adminCookie !== process.env.ADMIN_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-
   try {
     return NextResponse.json(await runFetch())
   } catch (err) {
