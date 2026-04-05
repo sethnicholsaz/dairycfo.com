@@ -50,9 +50,12 @@ function parseBarchartSheet(ws: XLSX.WorkSheet): FuturesRow[] {
 }
 
 export async function POST(req: NextRequest) {
-  // Admin-only
   const adminCookie = req.cookies.get("dcfo_admin")?.value
-  if (adminCookie !== process.env.ADMIN_SECRET) {
+  const cronSecret = req.headers.get("x-cron-secret")
+  const authorized =
+    adminCookie === process.env.ADMIN_SECRET ||
+    (cronSecret && cronSecret === process.env.CRON_SECRET)
+  if (!authorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
