@@ -68,7 +68,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const html = await renderNewsletterEmail(
       mdx_content,
       marketData ?? null,
-      "{{unsubscribe_url}}"
+      "{{unsubscribe_url}}",
+      { title, issueNumber: issue_number, publishedAt: existing.published_at }
     )
 
     const subject = `${title}${issue_number ? ` — Issue #${issue_number}` : ""}`
