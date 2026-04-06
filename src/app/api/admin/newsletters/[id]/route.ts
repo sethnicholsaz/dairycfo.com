@@ -100,7 +100,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     })
 
     if (!post) {
-      return NextResponse.json({ error: "Failed to create Beehiiv post" }, { status: 500 })
+      return NextResponse.json({ error: "Failed to create Beehiiv post — check Vercel logs for details" }, { status: 500 })
     }
 
     // Mark as sent and store Beehiiv post ID

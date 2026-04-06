@@ -83,21 +83,24 @@ export async function createBeehiivPost(opts: {
     return null
   }
 
+  const payload = {
+    title: opts.title,
+    subtitle: opts.subtitle ?? "",
+    content_html: opts.contentHtml,
+    status: opts.status ?? "draft",
+    audience: "all",
+  }
+
   const res = await fetch(`${BEEHIIV_BASE}/publications/${PUB_ID}/posts`, {
     method: "POST",
     headers: headers(),
-    body: JSON.stringify({
-      title: opts.title,
-      subtitle: opts.subtitle ?? "",
-      content_html: opts.contentHtml,
-      status: opts.status ?? "draft",
-      audience: "all",
-    }),
+    body: JSON.stringify(payload),
   })
 
   if (!res.ok) {
     const err = await res.text()
-    console.error("Beehiiv create post error:", err)
+    console.error(`Beehiiv create post error (${res.status}):`, err)
+    console.error("Payload sent:", JSON.stringify({ ...payload, content_html: `[${payload.content_html.length} chars]` }))
     return null
   }
 
