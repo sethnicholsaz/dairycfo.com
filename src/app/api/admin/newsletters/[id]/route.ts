@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
-import { createBeehiivPost } from "@/lib/beehiiv"
+import { resend, FROM_EMAIL, REPLY_TO, AUDIENCE_ID } from "@/lib/resend"
 import { renderNewsletterEmail } from "@/lib/email-renderer"
 
 interface Params {
@@ -74,11 +74,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     const sponsor = (sponsorPlacement as any)?.sponsors
 
-    // Render HTML — Beehiiv injects its own unsubscribe link automatically
+    // Render HTML — Resend replaces {{unsubscribe_url}} automatically in broadcasts
     const html = await renderNewsletterEmail(
       mdx_content,
       marketData ?? null,
-      "",
+      "{{unsubscribe_url}}",
       {
         title,
         issueNumber: issue_number,
@@ -91,25 +91,34 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     const subject = `${title}${issue_number ? ` — Issue #${issue_number}` : ""}`
 
-    // Create post in Beehiiv as a draft — review and send from Beehiiv dashboard
-    const post = await createBeehiivPost({
-      title: subject,
-      subtitle: excerpt || undefined,
-      contentHtml: html,
-      status: "draft",
+    // Create and send Resend broadcast
+    const { data: broadcast, error: broadcastError } = await resend.broadcasts.create({
+      audienceId: AUDIENCE_ID,
+      from: FROM_EMAIL,
+      replyTo: REPLY_TO,
+      subject,
+      html,
+      name: subject,
     })
 
-    if (!post) {
-      return NextResponse.json({ error: "Failed to create Beehiiv post — check Vercel logs for details" }, { status: 500 })
+    if (broadcastError || !broadcast) {
+      console.error("Broadcast create error:", broadcastError)
+      return NextResponse.json({ error: "Failed to create broadcast" }, { status: 500 })
     }
 
-    // Mark as sent and store Beehiiv post ID
+    const { error: sendError } = await resend.broadcasts.send(broadcast.id)
+
+    if (sendError) {
+      console.error("Broadcast send error:", sendError)
+      return NextResponse.json({ error: "Failed to send broadcast" }, { status: 500 })
+    }
+
     await supabase
       .from("newsletters")
-      .update({ sent_at: new Date().toISOString(), beehiiv_post_id: post.id })
+      .update({ sent_at: new Date().toISOString() })
       .eq("id", id)
 
-    return NextResponse.json({ success: true, beehiivPostId: post.id, beehiivUrl: post.url })
+    return NextResponse.json({ success: true, broadcastId: broadcast.id })
   }
 
   return NextResponse.json({ success: true })
