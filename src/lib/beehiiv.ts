@@ -83,12 +83,15 @@ export async function createBeehiivPost(opts: {
     return null
   }
 
+  // Beehiiv expects body HTML only — extract content between <body> tags
+  const bodyMatch = opts.contentHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+  const bodyContent = bodyMatch ? bodyMatch[1].trim() : opts.contentHtml
+
   const payload = {
     title: opts.title,
     subtitle: opts.subtitle ?? "",
-    content_html: opts.contentHtml,
+    body_content: bodyContent,
     status: opts.status ?? "draft",
-    audience: "all",
   }
 
   const res = await fetch(`${BEEHIIV_BASE}/publications/${PUB_ID}/posts`, {
@@ -100,7 +103,6 @@ export async function createBeehiivPost(opts: {
   if (!res.ok) {
     const err = await res.text()
     console.error(`Beehiiv create post error (${res.status}):`, err)
-    console.error("Payload sent:", JSON.stringify({ ...payload, content_html: `[${payload.content_html.length} chars]` }))
     return null
   }
 
