@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
-import { unsubscribeResendContact } from "@/lib/resend"
+import { unsubscribeBeehiivSubscriber } from "@/lib/beehiiv"
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token")
@@ -21,9 +21,9 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error
 
-    // Sync unsubscribe to Resend (non-blocking)
+    // Sync unsubscribe to Beehiiv (non-blocking)
     if (subscriber?.email) {
-      void unsubscribeResendContact(subscriber.email)
+      void unsubscribeBeehiivSubscriber(subscriber.email)
     }
 
     return NextResponse.redirect(new URL("/unsubscribe?confirmed=1", req.url))
