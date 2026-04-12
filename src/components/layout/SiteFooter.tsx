@@ -2,23 +2,23 @@ import Link from "next/link"
 
 export function SiteFooter() {
   return (
-    <footer style={{ background: "#1c2e1f" }}>
+    <footer className="bg-green-900">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "#1c4a2a" }}>
-                <span style={{ color: "#c8902a", fontWeight: 800, fontSize: "13px", fontFamily: "Georgia, serif" }}>D</span>
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-green-800">
+                <span className="text-gold-600 font-extrabold text-[13px] font-serif">D</span>
               </div>
-              <span style={{ fontWeight: 600, fontSize: "15px", color: "#e8f0e4", letterSpacing: "-0.01em" }}>DairyCFO</span>
+              <span className="font-semibold text-[15px] tracking-[-0.01em]" style={{ color: "#e8f0e4" }}>DairyCFO</span>
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: "#6a8870", maxWidth: "280px" }}>
-              What's happening on the farm — explained for the professionals who serve the dairy industry.
+            <p className="text-sm leading-relaxed max-w-[280px]" style={{ color: "#6a8870" }}>
+              What&apos;s happening on the farm — explained for the professionals who serve the dairy industry.
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-semibold mb-4" style={{ color: "#4a6a54", letterSpacing: "0.06em", textTransform: "uppercase" }}>Publication</p>
+            <p className="text-xs font-semibold mb-4 uppercase tracking-[0.06em]" style={{ color: "#4a6a54" }}>Publication</p>
             <ul className="space-y-3">
               {[
                 { href: "/newsletters", label: "Archive" },
@@ -34,7 +34,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold mb-4" style={{ color: "#4a6a54", letterSpacing: "0.06em", textTransform: "uppercase" }}>Account</p>
+            <p className="text-xs font-semibold mb-4 uppercase tracking-[0.06em]" style={{ color: "#4a6a54" }}>Account</p>
             <ul className="space-y-3">
               {[
                 { href: "/subscribe",   label: "Subscribe free" },

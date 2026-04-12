@@ -17,9 +17,9 @@ export default async function MarketDataPage() {
   const recent = await getRecentMarketData()
 
   return (
-    <div className="min-h-screen bg-[#f7f4ed]">
-      <header className="bg-[#1c2e1f] text-[#f7f4ed] px-6 py-4 flex items-center gap-3">
-        <Link href="/admin" className="text-[#a8b8a0] hover:text-[#f7f4ed] transition-colors">
+    <div className="min-h-screen bg-cream-200">
+      <header className="bg-green-900 text-cream-200 px-6 py-4 flex items-center gap-3">
+        <Link href="/admin" className="text-[#a8b8a0] hover:text-cream-200 transition-colors">
           <ArrowLeft size={18} />
         </Link>
         <span className="font-serif font-bold">Market Data</span>

@@ -33,18 +33,18 @@ export default async function SponsorsPage() {
   const [sponsors, newsletters] = await Promise.all([getSponsors(), getNewsletters()])
 
   return (
-    <div className="min-h-screen bg-[#f7f4ed]">
-      <header className="bg-[#1c2e1f] text-[#f7f4ed] px-6 py-4 flex items-center gap-3">
-        <Link href="/admin" className="text-[#a8b8a0] hover:text-[#f7f4ed] transition-colors">
+    <div className="min-h-screen bg-cream-200">
+      <header className="bg-green-900 text-cream-200 px-6 py-4 flex items-center gap-3">
+        <Link href="/admin" className="text-[#a8b8a0] hover:text-cream-200 transition-colors">
           <ArrowLeft size={18} />
         </Link>
         <span className="font-serif font-bold">Sponsors</span>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-10">
-        <div className="bg-white rounded-lg border border-[#d8d2be] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#d8d2be]">
-            <h2 className="font-semibold text-[#1c2e1f]">All Sponsor Requests ({sponsors.length})</h2>
+        <div className="bg-white rounded-lg border border-cream-400 overflow-hidden">
+          <div className="px-6 py-4 border-b border-cream-400">
+            <h2 className="font-semibold text-green-900">All Sponsor Requests ({sponsors.length})</h2>
           </div>
 
           {sponsors.length === 0 ? (
@@ -58,7 +58,7 @@ export default async function SponsorsPage() {
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="font-semibold text-[#1c2e1f]">{s.company}</h3>
+                        <h3 className="font-semibold text-green-900">{s.company}</h3>
                         <span className={`text-xs px-2 py-0.5 rounded font-medium ${statusColor[s.status] ?? "bg-gray-100 text-gray-600"}`}>
                           {s.status}
                         </span>
@@ -70,13 +70,13 @@ export default async function SponsorsPage() {
                       </div>
                       <div className="text-sm text-[#6b6348] space-y-0.5">
                         <p>{s.contact_name && `${s.contact_name} · `}{s.contact_email}</p>
-                        {s.website && <p><a href={s.website} target="_blank" className="text-[#1c4a2a] hover:underline">{s.website}</a></p>}
+                        {s.website && <p><a href={s.website} target="_blank" className="text-green-800 hover:underline">{s.website}</a></p>}
                         {s.desired_newsletter && <p>Desired issue: <em>{s.desired_newsletter}</em></p>}
                         {s.message && <p className="text-xs text-[#8a8068] mt-1">&ldquo;{s.message}&rdquo;</p>}
                       </div>
                       {s.artwork_url && (
                         <div className="mt-2">
-                          <a href={s.artwork_url} target="_blank" className="text-xs text-[#1c4a2a] underline">
+                          <a href={s.artwork_url} target="_blank" className="text-xs text-green-800 underline">
                             View artwork ({s.artwork_filename})
                           </a>
                         </div>

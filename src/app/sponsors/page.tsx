@@ -5,30 +5,30 @@ import { ArrowRight } from "lucide-react"
 
 export default function SponsorsPage() {
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#fdfcf9" }}>
+    <div className="flex flex-col min-h-screen bg-cream-100">
       <SiteNav />
 
       <main className="flex-1">
         {/* Hero */}
-        <section style={{ paddingTop: "120px", paddingBottom: "80px" }}>
+        <section className="pt-[120px] pb-[80px]">
           <div className="max-w-7xl mx-auto px-6">
-            <p className="text-sm font-medium mb-5" style={{ color: "#c8902a", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            <p className="text-sm font-medium mb-5 uppercase tracking-[0.06em] text-gold-600">
               Sponsorships
             </p>
             <h1
-              className="font-bold tracking-tight mb-5"
-              style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: "#111410", letterSpacing: "-0.03em", lineHeight: 1.1, maxWidth: "640px" }}
+              className="font-bold tracking-[-0.03em] mb-5 text-ink-900"
+              style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", lineHeight: 1.1, maxWidth: "640px" }}
             >
               Reach the people who buy milk.
             </h1>
-            <p className="leading-relaxed" style={{ color: "#4a5046", fontSize: "1.125rem", maxWidth: "500px" }}>
+            <p className="leading-relaxed text-ink-500 text-[1.125rem] max-w-[500px]">
               DairyCFO goes to dairy industry professionals — creamery procurement teams, co-op leadership, lenders, equipment dealers, hedger firms, and insurance agents — the people whose business is tied to what happens on dairy farms.
             </p>
           </div>
         </section>
 
         {/* Two-col content */}
-        <section style={{ paddingBottom: "96px" }}>
+        <section className="pb-[96px]">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
               {/* Left: value prop */}
@@ -40,9 +40,9 @@ export default function SponsorsPage() {
                     { value: "100%", label: "relevant audience" },
                     { value: "∞", label: "archived permanently" },
                   ].map(({ value, label }) => (
-                    <div key={label} className="rounded-xl p-4 text-center" style={{ background: "#ffffff", border: "1px solid #d8d2be" }}>
-                      <p className="font-bold text-2xl mb-1" style={{ color: "#1c4a2a", letterSpacing: "-0.03em", fontFamily: "Georgia, serif" }}>{value}</p>
-                      <p className="text-xs leading-snug" style={{ color: "#8a9080" }}>{label}</p>
+                    <div key={label} className="rounded-xl p-4 text-center bg-white border border-cream-400">
+                      <p className="font-bold text-2xl mb-1 font-serif text-green-800 tracking-[-0.03em]">{value}</p>
+                      <p className="text-xs leading-snug text-ink-300">{label}</p>
                     </div>
                   ))}
                 </div>
@@ -67,18 +67,18 @@ export default function SponsorsPage() {
                     },
                   ].map(({ title, desc }) => (
                     <div key={title} className="flex gap-4">
-                      <div className="w-1.5 h-1.5 rounded-full mt-2 shrink-0" style={{ background: "#c8902a" }} />
+                      <div className="w-1.5 h-1.5 rounded-full mt-2 shrink-0 bg-gold-600" />
                       <div>
-                        <p className="font-semibold text-sm mb-1" style={{ color: "#111410" }}>{title}</p>
-                        <p className="text-sm leading-relaxed" style={{ color: "#4a5046" }}>{desc}</p>
+                        <p className="font-semibold text-sm mb-1 text-ink-900">{title}</p>
+                        <p className="text-sm leading-relaxed text-ink-500">{desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 {/* What's included */}
-                <div className="rounded-2xl p-6" style={{ background: "#1c4a2a" }}>
-                  <p className="text-xs font-semibold mb-4" style={{ color: "#a8c4b0", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                <div className="rounded-2xl p-6 bg-green-800">
+                  <p className="text-xs font-semibold mb-4 uppercase tracking-[0.06em]" style={{ color: "#a8c4b0" }}>
                     Placement includes
                   </p>
                   <ul className="space-y-3">
@@ -90,7 +90,7 @@ export default function SponsorsPage() {
                       "Link in the email send",
                     ].map((item) => (
                       <li key={item} className="flex items-center gap-3 text-sm" style={{ color: "#d4e8d8" }}>
-                        <ArrowRight size={12} className="shrink-0" style={{ color: "#c8902a" }} />
+                        <ArrowRight size={12} className="shrink-0 text-gold-600" />
                         {item}
                       </li>
                     ))}
@@ -100,17 +100,14 @@ export default function SponsorsPage() {
 
               {/* Right: form */}
               <div>
-                <div
-                  className="rounded-2xl p-8"
-                  style={{ background: "#ffffff", border: "1px solid #d8d2be", boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}
-                >
+                <div className="rounded-2xl p-8 bg-white border border-cream-400 shadow-card">
                   <h2
-                    className="font-bold tracking-tight mb-2"
-                    style={{ fontSize: "1.5rem", color: "#111410", letterSpacing: "-0.02em" }}
+                    className="font-bold tracking-[-0.02em] mb-2 text-ink-900"
+                    style={{ fontSize: "1.5rem" }}
                   >
                     Request a placement
                   </h2>
-                  <p className="text-sm mb-8" style={{ color: "#4a5046" }}>
+                  <p className="text-sm mb-8 text-ink-500">
                     Tell us about your company. You&apos;ll pay via credit card after we confirm availability and review your artwork.
                   </p>
                   <SponsorRequestForm />

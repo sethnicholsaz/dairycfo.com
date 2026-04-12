@@ -20,67 +20,39 @@ export function SiteNav() {
       style={{
         background: scrolled ? "rgba(253,252,249,0.92)" : "rgba(253,252,249,0.0)",
         backdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled ? "1px solid #d8d2be" : "1px solid transparent",
+        borderBottom: scrolled ? "1px solid var(--cream-400)" : "1px solid transparent",
       }}
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: "#1c4a2a" }}
-          >
-            <span style={{ color: "#c8902a", fontWeight: 800, fontSize: "13px", fontFamily: "Georgia, serif" }}>D</span>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-green-800">
+            <span className="font-extrabold text-[13px] font-serif text-gold-600">D</span>
           </div>
-          <span style={{ fontWeight: 600, fontSize: "15px", color: "#111410", letterSpacing: "-0.01em" }}>
+          <span className="font-semibold text-[15px] text-ink-900 tracking-[-0.01em]">
             DairyCFO
           </span>
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link
-            href="/newsletters"
-            className="text-sm font-medium transition-colors duration-150"
-            style={{ color: "#4a5046" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#111410")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#4a5046")}
-          >
-            Archive
-          </Link>
-          <Link
-            href="/pricing"
-            className="text-sm font-medium transition-colors duration-150"
-            style={{ color: "#4a5046" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#111410")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#4a5046")}
-          >
-            Pricing
-          </Link>
-          <Link
-            href="/sponsors"
-            className="text-sm font-medium transition-colors duration-150"
-            style={{ color: "#4a5046" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#111410")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#4a5046")}
-          >
-            Sponsor
-          </Link>
-          <Link
-            href="/account"
-            className="text-sm font-medium transition-colors duration-150"
-            style={{ color: "#4a5046" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#111410")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#4a5046")}
-          >
-            Account
-          </Link>
+          {[
+            { href: "/newsletters", label: "Archive" },
+            { href: "/pricing",     label: "Pricing" },
+            { href: "/sponsors",    label: "Sponsor" },
+            { href: "/account",     label: "Account" },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="text-sm font-medium transition-colors duration-150 text-ink-500 hover:text-ink-900"
+            >
+              {label}
+            </Link>
+          ))}
           <Link
             href="/subscribe"
-            className="inline-flex items-center h-9 px-5 rounded-full text-sm font-semibold transition-all duration-150"
-            style={{ background: "#1c4a2a", color: "#ffffff" }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#245c33")}
-            onMouseLeave={e => (e.currentTarget.style.background = "#1c4a2a")}
+            className="inline-flex items-center h-9 px-5 rounded-full text-sm font-semibold transition-all duration-150 bg-green-800 text-white hover:bg-green-700"
           >
             Subscribe free
           </Link>
@@ -88,8 +60,7 @@ export function SiteNav() {
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden w-9 h-9 flex items-center justify-center rounded-full transition-colors"
-          style={{ color: "#4a5046" }}
+          className="md:hidden w-9 h-9 flex items-center justify-center rounded-full transition-colors text-ink-500"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
         >
@@ -101,17 +72,27 @@ export function SiteNav() {
       {open && (
         <div
           className="md:hidden border-t px-6 py-4 space-y-1"
-          style={{ background: "rgba(253,252,249,0.97)", borderColor: "#d8d2be" }}
+          style={{ background: "rgba(253,252,249,0.97)", borderColor: "var(--cream-400)" }}
         >
-          <Link href="/newsletters" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Archive</Link>
-          <Link href="/pricing" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Pricing</Link>
-          <Link href="/sponsors" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Sponsor</Link>
-          <Link href="/account" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Account</Link>
+          {[
+            { href: "/newsletters", label: "Archive" },
+            { href: "/pricing",     label: "Pricing" },
+            { href: "/sponsors",    label: "Sponsor" },
+            { href: "/account",     label: "Account" },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="block py-2.5 text-sm font-medium text-ink-500"
+              onClick={() => setOpen(false)}
+            >
+              {label}
+            </Link>
+          ))}
           <div className="pt-2">
             <Link
               href="/subscribe"
-              className="block text-center py-2.5 px-5 rounded-full text-sm font-semibold"
-              style={{ background: "#1c4a2a", color: "#ffffff" }}
+              className="block text-center py-2.5 px-5 rounded-full text-sm font-semibold bg-green-800 text-white"
               onClick={() => setOpen(false)}
             >
               Subscribe free

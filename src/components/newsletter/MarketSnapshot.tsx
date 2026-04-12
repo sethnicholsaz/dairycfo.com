@@ -42,7 +42,7 @@ export async function MarketSnapshot() {
 
   if (!latest) {
     return (
-      <div className="bg-[#f7f4ed] border border-[#d8d2be] rounded-lg p-6 my-6">
+      <div className="bg-cream-200 border border-cream-400 rounded-lg p-6 my-6">
         <p className="text-sm text-[#8a8068] text-center">Market data coming soon.</p>
       </div>
     )
@@ -60,7 +60,7 @@ export async function MarketSnapshot() {
   const futures: { month: string; price: number }[] = latest.class_iii_futures ?? []
 
   return (
-    <div className="bg-[#f7f4ed] border border-[#d8d2be] rounded-lg overflow-hidden my-6">
+    <div className="bg-cream-200 border border-cream-400 rounded-lg overflow-hidden my-6">
       {/* Header */}
       <div className="bg-[#1c4a2a] text-[#f7f4ed] px-5 py-3 flex items-center justify-between">
         <span className="font-serif font-semibold">Dairy Market Snapshot</span>
@@ -82,7 +82,7 @@ export async function MarketSnapshot() {
         </p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {rows.map((row) => (
-            <div key={row.label} className="bg-white rounded p-3 border border-[#d8d2be]">
+            <div key={row.label} className="bg-white rounded p-3 border border-cream-400">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-[#6b6348]">{row.label}</span>
                 <Trend current={row.value} prev={row.prev} />
@@ -97,7 +97,7 @@ export async function MarketSnapshot() {
 
       {/* Futures strip if available */}
       {futures.length > 0 && (
-        <div className="px-5 pb-5 border-t border-[#d8d2be] pt-4">
+        <div className="px-5 pb-5 border-t border-cream-400 pt-4">
           <p className="text-xs text-[#8a8068] uppercase tracking-wider mb-3 font-medium">
             Class III Futures Strip
           </p>
@@ -105,7 +105,7 @@ export async function MarketSnapshot() {
             {futures.slice(0, 6).map((f) => (
               <div
                 key={f.month}
-                className="bg-white border border-[#d8d2be] rounded px-3 py-2 text-center"
+                className="bg-white border border-cream-400 rounded px-3 py-2 text-center"
               >
                 <p className="text-xs text-[#8a8068]">{f.month}</p>
                 <p className="font-semibold text-[#1c4a2a] text-sm">${f.price.toFixed(2)}</p>
@@ -115,7 +115,7 @@ export async function MarketSnapshot() {
         </div>
       )}
 
-      <div className="bg-[#f0ece0] px-5 py-2 text-xs text-[#8a8068] border-t border-[#d8d2be]">
+      <div className="bg-[#f0ece0] px-5 py-2 text-xs text-[#8a8068] border-t border-cream-400">
         Announced prices via USDA AMS. Futures via Barchart. Not financial advice.
       </div>
     </div>

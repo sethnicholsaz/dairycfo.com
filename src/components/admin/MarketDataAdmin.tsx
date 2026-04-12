@@ -83,8 +83,8 @@ export function MarketDataAdmin({ recent }: Props) {
   return (
     <div className="space-y-10">
       {/* USDA fetch */}
-      <div className="bg-white rounded-lg border border-[#d8d2be] p-6">
-        <h2 className="font-serif text-lg font-semibold text-[#1c2e1f] mb-1">
+      <div className="bg-white rounded-lg border border-cream-400 p-6">
+        <h2 className="font-serif text-lg font-semibold text-green-900 mb-1">
           USDA AMS — Announced Prices
         </h2>
         <p className="text-sm text-[#6b6348] mb-4">
@@ -107,14 +107,14 @@ export function MarketDataAdmin({ recent }: Props) {
         </div>
         <p className="text-xs text-[#8a8068] mt-3">
           Set up a daily cron job (Vercel Cron or external) to POST{" "}
-          <code className="bg-[#f7f4ed] px-1 py-0.5 rounded">/api/market-data/usda</code> with{" "}
-          <code className="bg-[#f7f4ed] px-1 py-0.5 rounded">x-cron-secret</code> header.
+          <code className="bg-cream-200 px-1 py-0.5 rounded">/api/market-data/usda</code> with{" "}
+          <code className="bg-cream-200 px-1 py-0.5 rounded">x-cron-secret</code> header.
         </p>
       </div>
 
       {/* Barchart Excel upload */}
-      <div className="bg-white rounded-lg border border-[#d8d2be] p-6">
-        <h2 className="font-serif text-lg font-semibold text-[#1c2e1f] mb-1">
+      <div className="bg-white rounded-lg border border-cream-400 p-6">
+        <h2 className="font-serif text-lg font-semibold text-green-900 mb-1">
           Barchart — Futures Data Upload
         </h2>
         <p className="text-sm text-[#6b6348] mb-4">
@@ -127,7 +127,7 @@ export function MarketDataAdmin({ recent }: Props) {
             <label className="block text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider mb-1">
               Excel File
             </label>
-            <div className="border-2 border-dashed border-[#d8d2be] rounded-md p-4">
+            <div className="border-2 border-dashed border-cream-400 rounded-md p-4">
               <input
                 type="file"
                 accept=".xlsx,.xls,.csv"
@@ -167,9 +167,9 @@ export function MarketDataAdmin({ recent }: Props) {
       </div>
 
       {/* Market prices table */}
-      <div className="bg-white rounded-lg border border-[#d8d2be] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#d8d2be]">
-          <h2 className="font-semibold text-[#1c2e1f]">Market Prices</h2>
+      <div className="bg-white rounded-lg border border-cream-400 overflow-hidden">
+        <div className="px-6 py-4 border-b border-cream-400">
+          <h2 className="font-semibold text-green-900">Market Prices</h2>
           <p className="text-xs text-[#8a8068] mt-0.5">Class III from Barchart upload · Spot prices auto-fetched from CME via USDA</p>
         </div>
         {recent.length === 0 ? (
@@ -180,7 +180,7 @@ export function MarketDataAdmin({ recent }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-[#d8d2be] bg-[#fdfcf9]">
+                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-cream-400 bg-cream-100">
                   <th className="px-4 py-3 text-left">Date</th>
                   <th className="px-4 py-3 text-right">Class III</th>
                   <th className="px-4 py-3 text-right">Class IV</th>
@@ -192,7 +192,7 @@ export function MarketDataAdmin({ recent }: Props) {
               <tbody>
                 {recent.map((row) => (
                   <tr key={row.id} className="border-b border-[#f0ece0] last:border-0">
-                    <td className="px-4 py-3 font-medium text-[#1c2e1f]">
+                    <td className="px-4 py-3 font-medium text-green-900">
                       {new Date(row.data_date + "T00:00:00").toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-right">{fmt(row.class_iii_price)}</td>
@@ -209,9 +209,9 @@ export function MarketDataAdmin({ recent }: Props) {
       </div>
 
       {/* Feed cost + margin table */}
-      <div className="bg-white rounded-lg border border-[#d8d2be] overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#d8d2be]">
-          <h2 className="font-semibold text-[#1c2e1f]">Feed Cost & Dairy Margin</h2>
+      <div className="bg-white rounded-lg border border-cream-400 overflow-hidden">
+        <div className="px-6 py-4 border-b border-cream-400">
+          <h2 className="font-semibold text-green-900">Feed Cost & Dairy Margin</h2>
           <p className="text-xs text-[#8a8068] mt-0.5">DMC formula: 60 lbs corn + 27.4 lbs alfalfa + 14.7 lbs soybean meal per cwt · Margin = Class III − Feed Cost</p>
         </div>
         {recent.length === 0 ? (
@@ -220,7 +220,7 @@ export function MarketDataAdmin({ recent }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-[#d8d2be] bg-[#fdfcf9]">
+                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-cream-400 bg-cream-100">
                   <th className="px-4 py-3 text-left">Date</th>
                   <th className="px-4 py-3 text-right">Corn /bu</th>
                   <th className="px-4 py-3 text-right">Alfalfa /ton</th>
@@ -232,7 +232,7 @@ export function MarketDataAdmin({ recent }: Props) {
               <tbody>
                 {recent.map((row) => (
                   <tr key={row.id} className="border-b border-[#f0ece0] last:border-0">
-                    <td className="px-4 py-3 font-medium text-[#1c2e1f]">
+                    <td className="px-4 py-3 font-medium text-green-900">
                       {new Date(row.data_date + "T00:00:00").toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-right">{fmt(row.corn_price)}</td>

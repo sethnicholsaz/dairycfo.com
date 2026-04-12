@@ -40,30 +40,30 @@ export default async function AdminDashboard() {
   const [stats, recent] = await Promise.all([getStats(), getRecentNewsletters()])
 
   return (
-    <div className="min-h-screen bg-[#f7f4ed]">
+    <div className="min-h-screen bg-cream-200">
       {/* Admin header */}
-      <header className="bg-[#1c2e1f] text-[#f7f4ed] px-6 py-4 flex items-center justify-between">
+      <header className="bg-green-900 text-cream-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 bg-[#c8902a] rounded flex items-center justify-center">
+          <div className="w-7 h-7 bg-gold-600 rounded flex items-center justify-center">
             <span className="text-white font-bold text-xs font-serif">D</span>
           </div>
           <span className="font-serif font-bold">DairyCFO Admin</span>
         </div>
         <nav className="flex items-center gap-6 text-sm text-[#a8b8a0]">
-          <Link href="/admin/newsletters" className="hover:text-[#f7f4ed] transition-colors">Newsletters</Link>
-          <Link href="/admin/subscribers" className="hover:text-[#f7f4ed] transition-colors">Subscribers</Link>
-          <Link href="/admin/sponsors" className="hover:text-[#f7f4ed] transition-colors">Sponsors</Link>
-          <Link href="/admin/market-data" className="hover:text-[#f7f4ed] transition-colors">Market Data</Link>
-          <Link href="/" className="text-[#c8902a] hover:text-[#d4a040] transition-colors">← Site</Link>
+          <Link href="/admin/newsletters" className="hover:text-cream-200 transition-colors">Newsletters</Link>
+          <Link href="/admin/subscribers" className="hover:text-cream-200 transition-colors">Subscribers</Link>
+          <Link href="/admin/sponsors" className="hover:text-cream-200 transition-colors">Sponsors</Link>
+          <Link href="/admin/market-data" className="hover:text-cream-200 transition-colors">Market Data</Link>
+          <Link href="/" className="text-gold-600 hover:text-gold-500 transition-colors">← Site</Link>
         </nav>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-serif text-2xl font-bold text-[#1c2e1f]">Dashboard</h1>
+          <h1 className="font-serif text-2xl font-bold text-green-900">Dashboard</h1>
           <Link
             href="/admin/newsletters/new"
-            className="inline-flex items-center gap-2 bg-[#1c4a2a] text-[#f7f4ed] px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#163d22] transition-colors"
+            className="inline-flex items-center gap-2 bg-green-800 text-cream-200 px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#163d22] transition-colors"
           >
             <PlusCircle size={15} />
             New Issue
@@ -81,39 +81,39 @@ export default async function AdminDashboard() {
             <Link
               key={label}
               href={href}
-              className={`bg-white rounded-lg p-5 border transition-colors hover:border-[#1c4a2a] ${
-                alert ? "border-[#c8902a]" : "border-[#d8d2be]"
+              className={`bg-white rounded-lg p-5 border transition-colors hover:border-green-800 ${
+                alert ? "border-[#c8902a]" : "border-cream-400"
               }`}
             >
-              <Icon size={16} className={alert ? "text-[#c8902a] mb-2" : "text-[#6b6348] mb-2"} />
-              <p className="font-serif text-2xl font-bold text-[#1c2e1f]">{value}</p>
+              <Icon size={16} className={alert ? "text-gold-600 mb-2" : "text-[#6b6348] mb-2"} />
+              <p className="font-serif text-2xl font-bold text-green-900">{value}</p>
               <p className="text-xs text-[#6b6348] mt-0.5">{label}</p>
             </Link>
           ))}
         </div>
 
         {/* Recent newsletters */}
-        <div className="bg-white rounded-lg border border-[#d8d2be] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#d8d2be] flex items-center justify-between">
-            <h2 className="font-semibold text-[#1c2e1f] flex items-center gap-2">
+        <div className="bg-white rounded-lg border border-cream-400 overflow-hidden">
+          <div className="px-6 py-4 border-b border-cream-400 flex items-center justify-between">
+            <h2 className="font-semibold text-green-900 flex items-center gap-2">
               <FileText size={16} />
               Recent Issues
             </h2>
-            <Link href="/admin/newsletters" className="text-xs text-[#c8902a] hover:underline">
+            <Link href="/admin/newsletters" className="text-xs text-gold-600 hover:underline">
               View all →
             </Link>
           </div>
           {recent.length === 0 ? (
             <div className="px-6 py-12 text-center text-[#8a8068] text-sm">
               No issues yet.{" "}
-              <Link href="/admin/newsletters/new" className="text-[#1c4a2a] underline">
+              <Link href="/admin/newsletters/new" className="text-green-800 underline">
                 Create your first issue →
               </Link>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-[#d8d2be]">
+                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-cream-400">
                   <th className="px-6 py-3 text-left">#</th>
                   <th className="px-6 py-3 text-left">Title</th>
                   <th className="px-6 py-3 text-left">Status</th>
@@ -125,10 +125,10 @@ export default async function AdminDashboard() {
               <tbody>
                 {recent.map((n) => (
                   <tr key={n.id} className="border-b border-[#f0ece0] last:border-0 hover:bg-[#fafaf7]">
-                    <td className="px-6 py-4 text-[#c8902a] font-medium">
+                    <td className="px-6 py-4 text-gold-600 font-medium">
                       {n.issue_number ? `#${n.issue_number}` : "—"}
                     </td>
-                    <td className="px-6 py-4 font-medium text-[#1c2e1f]">{n.title}</td>
+                    <td className="px-6 py-4 font-medium text-green-900">{n.title}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
@@ -153,7 +153,7 @@ export default async function AdminDashboard() {
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/admin/newsletters/${n.id}`}
-                        className="text-xs text-[#1c4a2a] hover:underline"
+                        className="text-xs text-green-800 hover:underline"
                       >
                         Edit →
                       </Link>

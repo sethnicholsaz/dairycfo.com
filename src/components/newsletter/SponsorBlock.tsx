@@ -37,9 +37,9 @@ export async function SponsorBlock({ newsletterId, position = "body" }: Props) {
           return (
             <div
               key={p.id}
-              className="border border-[#d8d2be] rounded-lg overflow-hidden bg-white"
+              className="border border-cream-400 rounded-lg overflow-hidden bg-white"
             >
-              <div className="bg-[#f7f4ed] px-4 py-1.5 border-b border-[#d8d2be]">
+              <div className="bg-cream-200 px-4 py-1.5 border-b border-cream-400">
                 <span className="text-[10px] text-[#8a8068] uppercase tracking-widest font-medium">
                   Sponsored by {sponsor.company}
                 </span>

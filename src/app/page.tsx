@@ -7,39 +7,35 @@ import { ArrowRight } from "lucide-react"
 export default async function HomePage() {
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#fdfcf9" }}>
+    <div className="flex flex-col min-h-screen bg-cream-100">
       <SiteNav />
 
       {/* ─── HERO ─── */}
-      <section style={{ paddingTop: "100px", paddingBottom: "80px" }}>
+      <section className="pt-[100px] pb-[80px]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
             {/* Left: copy */}
             <div>
-              <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full" style={{ background: "#f0ede6", border: "1px solid #d8d2be" }}>
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#c8902a" }} />
-                <span className="text-sm font-medium" style={{ color: "#4a5046", letterSpacing: "0.04em", fontSize: "11px", textTransform: "uppercase" }}>
+              <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full bg-cream-200 border border-cream-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-gold-600" />
+                <span className="text-[11px] font-medium uppercase tracking-[0.04em] text-ink-500">
                   For dairy industry professionals
                 </span>
               </div>
 
               <h1
-                className="font-bold leading-[1.08] tracking-tight mb-6"
-                style={{
-                  fontSize: "clamp(2.75rem, 5vw, 4.5rem)",
-                  color: "#111410",
-                  letterSpacing: "-0.03em",
-                }}
+                className="font-bold leading-[1.08] tracking-[-0.03em] mb-6 text-ink-900"
+                style={{ fontSize: "clamp(2.75rem, 5vw, 4.5rem)" }}
               >
                 The heartbeat of<br />
                 the dairy farm,<br />
-                <span style={{ color: "#1c4a2a" }}>delivered weekly.</span>
+                <span className="text-green-800">delivered weekly.</span>
               </h1>
 
               <p
-                className="mb-8 leading-relaxed"
-                style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)", color: "#4a5046", maxWidth: "480px", letterSpacing: "-0.01em" }}
+                className="mb-8 leading-relaxed text-ink-500 max-w-[480px] tracking-[-0.01em]"
+                style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)" }}
               >
                 Market prices, farm operations intel, and financial context —
                 so dairy industry professionals understand the farms they work with.
@@ -47,11 +43,11 @@ export default async function HomePage() {
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <SubscribeInlineForm />
-                <Link href="/newsletters" className="link-green-hover inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: "#4a5046" }}>
+                <Link href="/newsletters" className="link-green-hover inline-flex items-center gap-1.5 text-sm font-medium text-ink-500">
                   Browse archive <ArrowRight size={14} />
                 </Link>
               </div>
-              <p className="mt-4 text-xs" style={{ color: "#8a9080" }}>Free. No spam. Unsubscribe anytime.</p>
+              <p className="mt-4 text-xs text-ink-300">Free. No spam. Unsubscribe anytime.</p>
             </div>
 
             {/* Right: sample newsletter preview */}
@@ -98,8 +94,8 @@ export default async function HomePage() {
                     For dairy industry professionals — creameries, co-ops, lenders, and equipment dealers — spring flush means lower spot prices and shifting cash flow assumptions across the supply chain...
                   </p>
                 </div>
-                {/* Footer */}
-                <div style={{ background: "#1c2e1f", padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {/* Footer — uses bg-green-900 token color */}
+                <div style={{ background: "var(--green-900)", padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "10px", color: "#6a8870" }}>dairycfo.com</span>
                   <span style={{ fontSize: "10px", color: "#4a6050" }}>Unsubscribe</span>
                 </div>

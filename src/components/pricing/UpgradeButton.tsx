@@ -36,9 +36,9 @@ export function UpgradeButton({ priceId, label, variant }: UpgradeButtonProps) {
   }
 
   const styles: Record<string, React.CSSProperties> = {
-    gold:         { background: "#c8902a", color: "#ffffff" },
-    "outline-dark": { background: "transparent", color: "#111410", border: "1.5px solid #d8d2be" },
-    green:        { background: "#1c4a2a", color: "#ffffff" },
+    gold:           { background: "var(--gold-600)", color: "#ffffff" },
+    "outline-dark": { background: "transparent", color: "var(--ink-900)", border: "1.5px solid var(--cream-400)" },
+    green:          { background: "var(--green-800)", color: "#ffffff" },
   }
 
   return (
@@ -59,7 +59,7 @@ export function UpgradeButton({ priceId, label, variant }: UpgradeButtonProps) {
         )}
       </button>
       {error && (
-        <p className="mt-2 text-xs text-center" style={{ color: "#c0392b" }}>
+        <p className="mt-2 text-xs text-center text-error">
           {error}
         </p>
       )}

@@ -74,22 +74,20 @@ export default async function PricingPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: "#fdfcf9" }}>
+    <div className="flex flex-col min-h-screen bg-cream-100">
       <SiteNav />
 
       <main className="flex-1">
         {/* Hero */}
-        <section style={{ paddingTop: "120px", paddingBottom: "72px" }}>
+        <section className="pt-[120px] pb-[72px]">
           <div className="max-w-7xl mx-auto px-6 text-center">
-            <p className="text-sm font-medium mb-5 inline-block" style={{ color: "#c8902a", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            <p className="text-sm font-medium mb-5 inline-block uppercase tracking-[0.06em] text-gold-600">
               Pricing
             </p>
             <h1
-              className="font-bold tracking-tight mb-5 mx-auto"
+              className="font-bold tracking-[-0.03em] mb-5 mx-auto text-ink-900"
               style={{
                 fontSize: "clamp(2.5rem, 5vw, 4rem)",
-                color: "#111410",
-                letterSpacing: "-0.03em",
                 lineHeight: 1.1,
                 maxWidth: "640px",
               }}
@@ -97,8 +95,7 @@ export default async function PricingPage() {
               Simple pricing for dairy professionals.
             </h1>
             <p
-              className="mx-auto leading-relaxed"
-              style={{ color: "#4a5046", fontSize: "1.125rem", maxWidth: "480px" }}
+              className="mx-auto leading-relaxed text-ink-500 text-[1.125rem] max-w-[480px]"
             >
               Start free. Upgrade when you need deeper data, cleaner exports, or team access.
             </p>
@@ -106,7 +103,7 @@ export default async function PricingPage() {
         </section>
 
         {/* Tier cards */}
-        <section style={{ paddingBottom: "96px" }}>
+        <section className="pb-[96px]">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {tiers.map((tier) => {
@@ -118,8 +115,8 @@ export default async function PricingPage() {
                     key={tier.name}
                     className="rounded-2xl p-8 flex flex-col relative"
                     style={{
-                      background: isHighlighted ? "#1c4a2a" : "#ffffff",
-                      border: isHighlighted ? "none" : "1px solid #d8d2be",
+                      background: isHighlighted ? "var(--green-800)" : "#ffffff",
+                      border: isHighlighted ? "none" : "1px solid var(--cream-400)",
                       boxShadow: isHighlighted
                         ? "0 8px 40px rgba(28,74,42,0.25)"
                         : "0 2px 8px rgba(0,0,0,0.04)",
@@ -128,42 +125,33 @@ export default async function PricingPage() {
                     {/* Tier header */}
                     <div className="mb-6">
                       <p
-                        className="text-xs font-semibold mb-3"
-                        style={{
-                          color: isHighlighted ? "#a8c4b0" : "#8a9080",
-                          letterSpacing: "0.06em",
-                          textTransform: "uppercase",
-                        }}
+                        className="text-xs font-semibold mb-3 uppercase tracking-[0.06em]"
+                        style={{ color: isHighlighted ? "#a8c4b0" : "var(--ink-300)" }}
                       >
                         {tier.name}
                       </p>
                       <div className="flex items-baseline gap-1 mb-1">
                         <span
-                          className="font-bold tracking-tight"
-                          style={{
-                            fontSize: "2.5rem",
-                            color: isHighlighted ? "#ffffff" : "#111410",
-                            letterSpacing: "-0.03em",
-                            fontFamily: "Georgia, serif",
-                          }}
+                          className="font-bold tracking-[-0.03em] font-serif text-[2.5rem]"
+                          style={{ color: isHighlighted ? "#ffffff" : "var(--ink-900)" }}
                         >
                           {tier.price}
                         </span>
                         <span
                           className="text-sm"
-                          style={{ color: isHighlighted ? "#a8c4b0" : "#8a9080" }}
+                          style={{ color: isHighlighted ? "#a8c4b0" : "var(--ink-300)" }}
                         >
                           {tier.period}
                         </span>
                       </div>
                       {tier.annualNote && (
-                        <p className="text-xs" style={{ color: isHighlighted ? "#a8c4b0" : "#8a9080" }}>
+                        <p className="text-xs" style={{ color: isHighlighted ? "#a8c4b0" : "var(--ink-300)" }}>
                           {tier.annualNote}
                         </p>
                       )}
                       <p
                         className="text-sm leading-relaxed mt-3"
-                        style={{ color: isHighlighted ? "#c8deca" : "#4a5046" }}
+                        style={{ color: isHighlighted ? "#c8deca" : "var(--ink-500)" }}
                       >
                         {tier.description}
                       </p>
@@ -176,9 +164,9 @@ export default async function PricingPage() {
                           <Check
                             size={14}
                             className="mt-0.5 shrink-0"
-                            style={{ color: isHighlighted ? "#c8902a" : "#1c4a2a" }}
+                            style={{ color: isHighlighted ? "var(--gold-600)" : "var(--green-800)" }}
                           />
-                          <span style={{ color: isHighlighted ? "#d4e8d8" : "#4a5046" }}>
+                          <span style={{ color: isHighlighted ? "#d4e8d8" : "var(--ink-500)" }}>
                             {feature}
                           </span>
                         </li>
@@ -190,8 +178,8 @@ export default async function PricingPage() {
                       <div
                         className="inline-flex items-center justify-center h-11 px-6 rounded-full text-sm font-semibold"
                         style={{
-                          background: isHighlighted ? "rgba(255,255,255,0.15)" : "#f0ede6",
-                          color: isHighlighted ? "#ffffff" : "#4a5046",
+                          background: isHighlighted ? "rgba(255,255,255,0.15)" : "var(--cream-200)",
+                          color: isHighlighted ? "#ffffff" : "var(--ink-500)",
                         }}
                       >
                         Current plan
@@ -207,8 +195,8 @@ export default async function PricingPage() {
                         href="/subscribe"
                         className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-sm font-semibold"
                         style={isHighlighted
-                          ? { background: "#c8902a", color: "#ffffff" }
-                          : { background: "transparent", color: "#111410", border: "1.5px solid #d8d2be" }
+                          ? { background: "var(--gold-600)", color: "#ffffff" }
+                          : { background: "transparent", color: "var(--ink-900)", border: "1.5px solid var(--cream-400)" }
                         }
                       >
                         Notify me at launch
@@ -218,7 +206,7 @@ export default async function PricingPage() {
                       <Link
                         href="/subscribe"
                         className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-sm font-semibold"
-                        style={{ background: "transparent", color: "#1c4a2a", border: "1.5px solid #1c4a2a" }}
+                        style={{ background: "transparent", color: "var(--green-800)", border: "1.5px solid var(--green-800)" }}
                       >
                         Subscribe free
                         <ArrowRight size={14} />
@@ -232,24 +220,20 @@ export default async function PricingPage() {
         </section>
 
         {/* Sponsor CTA strip */}
-        <section style={{ paddingBottom: "96px" }}>
+        <section className="pb-[96px]">
           <div className="max-w-7xl mx-auto px-6">
-            <div
-              className="rounded-2xl px-8 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
-              style={{ background: "#f0ede6", border: "1px solid #d8d2be" }}
-            >
+            <div className="rounded-2xl px-8 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-cream-200 border border-cream-400">
               <div>
-                <p className="font-bold text-lg mb-1" style={{ color: "#111410", letterSpacing: "-0.02em" }}>
+                <p className="font-bold text-lg mb-1 text-ink-900 tracking-[-0.02em]">
                   Looking to sponsor an issue?
                 </p>
-                <p className="text-sm" style={{ color: "#4a5046", maxWidth: "420px" }}>
+                <p className="text-sm text-ink-500 max-w-[420px]">
                   Reach dairy industry decision-makers with a flat-fee placement. Starting at $500 per issue.
                 </p>
               </div>
               <Link
                 href="/sponsors"
-                className="inline-flex items-center gap-2 h-11 px-6 rounded-full text-sm font-semibold shrink-0 transition-all duration-150"
-                style={{ background: "#1c4a2a", color: "#ffffff" }}
+                className="inline-flex items-center gap-2 h-11 px-6 rounded-full text-sm font-semibold shrink-0 transition-all duration-150 bg-green-800 text-white hover:bg-green-700"
               >
                 See sponsorship options
                 <ArrowRight size={14} />
@@ -259,9 +243,9 @@ export default async function PricingPage() {
         </section>
 
         {/* FAQ */}
-        <section style={{ paddingBottom: "96px" }}>
+        <section className="pb-[96px]">
           <div className="max-w-3xl mx-auto px-6">
-            <p className="text-xs font-semibold mb-10 text-center" style={{ color: "#8a9080", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            <p className="text-xs font-semibold mb-10 text-center uppercase tracking-[0.06em] text-ink-300">
               Common questions
             </p>
             <div className="space-y-8">
@@ -284,8 +268,8 @@ export default async function PricingPage() {
                 },
               ].map(({ q, a }) => (
                 <div key={q}>
-                  <p className="font-semibold text-sm mb-2" style={{ color: "#111410" }}>{q}</p>
-                  <p className="text-sm leading-relaxed" style={{ color: "#4a5046" }}>{a}</p>
+                  <p className="font-semibold text-sm mb-2 text-ink-900">{q}</p>
+                  <p className="text-sm leading-relaxed text-ink-500">{a}</p>
                 </div>
               ))}
             </div>
