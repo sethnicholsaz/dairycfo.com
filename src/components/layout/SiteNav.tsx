@@ -38,7 +38,6 @@ export function SiteNav() {
         <nav className="hidden md:flex items-center gap-8">
           {[
             { href: "/newsletters", label: "Archive" },
-            { href: "/pricing",     label: "Pricing" },
             { href: "/sponsors",    label: "Sponsor" },
             { href: "/account",     label: "Account" },
           ].map(({ href, label }) => (
@@ -76,7 +75,6 @@ export function SiteNav() {
         >
           {[
             { href: "/newsletters", label: "Archive" },
-            { href: "/pricing",     label: "Pricing" },
             { href: "/sponsors",    label: "Sponsor" },
             { href: "/account",     label: "Account" },
           ].map(({ href, label }) => (
