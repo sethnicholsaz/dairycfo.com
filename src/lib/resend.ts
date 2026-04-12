@@ -1,10 +1,11 @@
 import { Resend } from "resend"
+import { env } from "@/lib/env"
 
-export const resend = new Resend(process.env.RESEND_API_KEY!)
+export const resend = new Resend(env.RESEND_API_KEY)
 
 export const FROM_EMAIL = "DairyCFO Newsletter <newsletter@mail.dairycfo.com>"
 export const REPLY_TO = "hello@mail.dairycfo.com"
-export const AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID!
+export const AUDIENCE_ID = env.RESEND_AUDIENCE_ID
 
 // Add or re-subscribe a contact in Resend audience
 export async function upsertResendContact(email: string, firstName?: string | null) {

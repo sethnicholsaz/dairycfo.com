@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import * as XLSX from "xlsx"
+import { env } from "@/lib/env"
 
 // All sheets use the Barchart time-series format:
 //
@@ -143,8 +144,8 @@ export async function POST(req: NextRequest) {
   const adminCookie = req.cookies.get("dcfo_admin")?.value
   const cronSecret = req.headers.get("x-cron-secret")
   const authorized =
-    adminCookie === process.env.ADMIN_SECRET ||
-    (cronSecret && cronSecret === process.env.CRON_SECRET)
+    adminCookie === env.ADMIN_SECRET ||
+    (cronSecret && cronSecret === env.CRON_SECRET)
   if (!authorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }

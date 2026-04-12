@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/layout/SiteNav"
 import { SiteFooter } from "@/components/layout/SiteFooter"
 import { UpgradeButton } from "@/components/pricing/UpgradeButton"
 import { getCurrentSubscription } from "@/lib/subscription"
+import { env } from "@/lib/env"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -14,9 +15,9 @@ export const metadata: Metadata = {
 export default async function PricingPage() {
   const currentSub = await getCurrentSubscription()
 
-  const proMonthlyId = process.env.STRIPE_PRICE_PRO_MONTHLY
-  const proAnnualId  = process.env.STRIPE_PRICE_PRO_ANNUAL
-  const teamMonthlyId = process.env.STRIPE_PRICE_TEAM_MONTHLY
+  const proMonthlyId = env.STRIPE_PRICE_PRO_MONTHLY
+  const proAnnualId  = env.STRIPE_PRICE_PRO_ANNUAL
+  const teamMonthlyId = env.STRIPE_PRICE_TEAM_MONTHLY
   const paidTiersLive = !!(proMonthlyId && proAnnualId && teamMonthlyId)
 
   const tiers = [

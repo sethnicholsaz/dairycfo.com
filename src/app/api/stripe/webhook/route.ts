@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { createServiceClient } from "@/lib/supabase/server"
+import { env } from "@/lib/env"
 import type Stripe from "stripe"
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
   const sig = req.headers.get("stripe-signature")!
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+  const webhookSecret = env.STRIPE_WEBHOOK_SECRET
 
   let event: Stripe.Event
 
@@ -113,8 +114,8 @@ async function upsertSubscription(
 
 function derivePlan(priceId: string | undefined): string {
   if (!priceId) return "free"
-  if (priceId === process.env.STRIPE_PRICE_TEAM_MONTHLY) return "team"
-  if (priceId === process.env.STRIPE_PRICE_PRO_MONTHLY) return "pro"
-  if (priceId === process.env.STRIPE_PRICE_PRO_ANNUAL) return "pro"
+  if (priceId === env.STRIPE_PRICE_TEAM_MONTHLY) return "team"
+  if (priceId === env.STRIPE_PRICE_PRO_MONTHLY) return "pro"
+  if (priceId === env.STRIPE_PRICE_PRO_ANNUAL) return "pro"
   return "pro" // unknown price — default to pro
 }

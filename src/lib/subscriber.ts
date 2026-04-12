@@ -1,10 +1,9 @@
 import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
+import { env } from "@/lib/env"
 
 const COOKIE_NAME = "dcfo_subscriber"
-const SECRET = new TextEncoder().encode(
-  process.env.SUBSCRIBER_JWT_SECRET ?? "change-me-in-production-secret-key"
-)
+const SECRET = new TextEncoder().encode(env.SUBSCRIBER_JWT_SECRET)
 
 export async function createSubscriberToken(subscriberId: string, email: string) {
   return new SignJWT({ sub: subscriberId, email })

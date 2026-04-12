@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { jwtVerify } from "jose"
+import { env } from "@/lib/env"
 
-const SECRET = new TextEncoder().encode(
-  process.env.SUBSCRIBER_JWT_SECRET ?? "change-me-in-production-secret-key"
-)
+const SECRET = new TextEncoder().encode(env.SUBSCRIBER_JWT_SECRET)
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET ?? "admin-change-me"
+const ADMIN_SECRET = env.ADMIN_SECRET
 
 // Routes that require subscriber cookie
 const SUBSCRIBER_ROUTES = ["/newsletters"]

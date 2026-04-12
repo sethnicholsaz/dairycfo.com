@@ -1,5 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/server"
 import { getSubscriberFromCookie } from "@/lib/subscriber"
+import { env } from "@/lib/env"
 
 export type Plan = "free" | "pro" | "team"
 
@@ -60,7 +61,7 @@ export function isTeam(info: SubscriptionInfo) {
 
 // Stripe price IDs — set in .env
 export const STRIPE_PRICES = {
-  proMonthly:  process.env.STRIPE_PRICE_PRO_MONTHLY!,
-  proAnnual:   process.env.STRIPE_PRICE_PRO_ANNUAL!,
-  teamMonthly: process.env.STRIPE_PRICE_TEAM_MONTHLY!,
+  proMonthly:  env.STRIPE_PRICE_PRO_MONTHLY,
+  proAnnual:   env.STRIPE_PRICE_PRO_ANNUAL,
+  teamMonthly: env.STRIPE_PRICE_TEAM_MONTHLY,
 }

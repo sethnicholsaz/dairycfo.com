@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { resend } from "@/lib/resend"
 import { createServiceClient } from "@/lib/supabase/server"
+import { env } from "@/lib/env"
 
 export async function POST(req: NextRequest) {
   const payload = await req.text()
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
         timestamp: req.headers.get("svix-timestamp") ?? "",
         signature: req.headers.get("svix-signature") ?? "",
       },
-      webhookSecret: process.env.RESEND_WEBHOOK_SECRET!,
+      webhookSecret: env.RESEND_WEBHOOK_SECRET,
     })
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 })

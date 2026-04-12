@@ -6,6 +6,7 @@ import { UpgradeButton } from "@/components/pricing/UpgradeButton"
 import { getCurrentSubscription, isPro } from "@/lib/subscription"
 import { getSubscriberFromCookie } from "@/lib/subscriber"
 import { createServiceClient } from "@/lib/supabase/server"
+import { env } from "@/lib/env"
 import { Check, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import type { Metadata } from "next"
@@ -33,8 +34,8 @@ export default async function AccountPage({
   const params = await searchParams
   const justUpgraded = params.upgraded === "1"
 
-  const proMonthlyId = process.env.STRIPE_PRICE_PRO_MONTHLY
-  const teamMonthlyId = process.env.STRIPE_PRICE_TEAM_MONTHLY
+  const proMonthlyId = env.STRIPE_PRICE_PRO_MONTHLY
+  const teamMonthlyId = env.STRIPE_PRICE_TEAM_MONTHLY
   const paidTiersLive = !!(proMonthlyId && teamMonthlyId)
 
   return (

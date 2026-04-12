@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import { fetchDairyProductPrices, fetchFeedCostInputs, fetchClassPrices } from "@/lib/usda"
+import { env } from "@/lib/env"
 
 async function runFetch() {
   const [products, feed, classes] = await Promise.all([
@@ -64,7 +65,7 @@ async function runFetch() {
 // Called by cron job with x-cron-secret header
 export async function POST(req: NextRequest) {
   const cronSecret = req.headers.get("x-cron-secret")
-  if (cronSecret !== process.env.CRON_SECRET) {
+  if (cronSecret !== env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
 // Called manually from admin UI
 export async function GET(req: NextRequest) {
   const adminCookie = req.cookies.get("dcfo_admin")?.value
-  if (adminCookie !== process.env.ADMIN_SECRET) {
+  if (adminCookie !== env.ADMIN_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {

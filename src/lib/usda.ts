@@ -12,8 +12,10 @@
 // Class III and Class IV announced prices are FMMO-derived and NOT in this API.
 // They are announced monthly by USDA and must be entered manually in the admin.
 
+import { env } from "@/lib/env"
+
 const USDA_BASE = "https://marsapi.ams.usda.gov/services/v1.2"
-const USDA_API_KEY = process.env.USDA_AMS_API_KEY
+const USDA_API_KEY = env.USDA_AMS_API_KEY
 
 function authHeader() {
   const encoded = Buffer.from(`${USDA_API_KEY}:`).toString("base64")

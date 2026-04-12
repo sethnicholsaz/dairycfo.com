@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
+import { env } from "@/lib/env"
 
-const SPONSOR_PRICE_CENTS = parseInt(process.env.SPONSOR_PRICE_CENTS ?? "50000")
+const SPONSOR_PRICE_CENTS = env.SPONSOR_PRICE_CENTS
 const ARTWORK_MAX_BYTES = 5 * 1024 * 1024 // 5MB
 
 export async function POST(req: NextRequest) {
