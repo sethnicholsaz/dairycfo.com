@@ -9,6 +9,12 @@ interface UpgradeButtonProps {
   variant: "gold" | "outline-dark" | "green"
 }
 
+const variantClasses: Record<string, string> = {
+  gold:           "bg-gold-600 text-white",
+  "outline-dark": "bg-transparent text-ink-900 border border-cream-400",
+  green:          "bg-green-800 text-white",
+}
+
 export function UpgradeButton({ priceId, label, variant }: UpgradeButtonProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,19 +41,12 @@ export function UpgradeButton({ priceId, label, variant }: UpgradeButtonProps) {
     }
   }
 
-  const styles: Record<string, React.CSSProperties> = {
-    gold:           { background: "var(--gold-600)", color: "#ffffff" },
-    "outline-dark": { background: "transparent", color: "var(--ink-900)", border: "1.5px solid var(--cream-400)" },
-    green:          { background: "var(--green-800)", color: "#ffffff" },
-  }
-
   return (
     <div>
       <button
         onClick={handleClick}
         disabled={loading}
-        className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-sm font-semibold w-full transition-opacity"
-        style={{ ...styles[variant], opacity: loading ? 0.7 : 1 }}
+        className={`inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-sm font-semibold w-full transition-opacity disabled:opacity-70 ${variantClasses[variant]}`}
       >
         {loading ? (
           <Loader2 size={15} className="animate-spin" />

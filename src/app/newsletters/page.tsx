@@ -39,10 +39,10 @@ export default async function NewslettersPage() {
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-6 pb-20">
           {newsletters.length === 0 ? (
-            <div className="rounded-2xl p-16 text-center" style={{ background: "#ffffff", border: "1px solid #d8d2be" }}>
-              <p className="font-semibold mb-2" style={{ color: "#111410" }}>First issue coming soon</p>
-              <p className="text-sm" style={{ color: "#4a5046" }}>Subscribe to be notified when we publish.</p>
-              <Link href="/subscribe" className="btn-green inline-flex items-center gap-2 mt-6 h-9 px-5 rounded-full text-sm font-semibold">
+            <div className="rounded-2xl p-16 text-center bg-white border border-cream-400">
+              <p className="font-semibold mb-2 text-ink-900">First issue coming soon</p>
+              <p className="text-sm text-ink-500">Subscribe to be notified when we publish.</p>
+              <Link href="/subscribe" className="inline-flex items-center gap-2 mt-6 h-9 px-5 rounded-full text-sm font-semibold bg-green-800 text-white hover:bg-green-700 transition-colors">
                 Subscribe free <ArrowRight size={13} />
               </Link>
             </div>

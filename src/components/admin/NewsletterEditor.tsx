@@ -167,12 +167,14 @@ export function NewsletterEditor({ newsletter }: Props) {
     }
   }
 
+  const inputClass = "w-full px-3 py-2 border border-cream-400 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-800 bg-white"
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Meta fields */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="md:col-span-2">
-          <label className="block text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider mb-1">
+          <label className="block text-xs font-semibold text-ink-700 uppercase tracking-wider mb-1">
             Title *
           </label>
           <input
@@ -180,11 +182,11 @@ export function NewsletterEditor({ newsletter }: Props) {
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="April 2026 — What Spring Means for Dairy Margins"
-            className="w-full px-3 py-2 border border-[#d8d2be] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#1c4a2a] bg-white"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider mb-1">
+          <label className="block text-xs font-semibold text-ink-700 uppercase tracking-wider mb-1">
             Slug (URL)
           </label>
           <input
@@ -192,11 +194,11 @@ export function NewsletterEditor({ newsletter }: Props) {
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             placeholder="april-2026-spring-dairy-margins"
-            className="w-full px-3 py-2 border border-[#d8d2be] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#1c4a2a] bg-white font-mono"
+            className={`${inputClass} font-mono`}
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider mb-1">
+          <label className="block text-xs font-semibold text-ink-700 uppercase tracking-wider mb-1">
             Issue #
           </label>
           <input
@@ -204,13 +206,13 @@ export function NewsletterEditor({ newsletter }: Props) {
             value={issueNumber}
             onChange={(e) => setIssueNumber(e.target.value)}
             placeholder="1"
-            className="w-full px-3 py-2 border border-[#d8d2be] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#1c4a2a] bg-white"
+            className={inputClass}
           />
         </div>
       </div>
 
       <div className="mb-6">
-        <label className="block text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider mb-1">
+        <label className="block text-xs font-semibold text-ink-700 uppercase tracking-wider mb-1">
           Excerpt (preview text for archive listing)
         </label>
         <input
@@ -218,32 +220,32 @@ export function NewsletterEditor({ newsletter }: Props) {
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
           placeholder="Class III prices hold steady as spring flush begins in the Upper Midwest..."
-          className="w-full px-3 py-2 border border-[#d8d2be] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#1c4a2a] bg-white"
+          className={inputClass}
         />
       </div>
 
       {/* Editor */}
-      <div className="bg-white border border-[#d8d2be] rounded-lg overflow-hidden mb-6">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#d8d2be] bg-[#f7f4ed]">
+      <div className="bg-white border border-cream-400 rounded-lg overflow-hidden mb-6">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-cream-400 bg-cream-200">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[#2d2a1e] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-ink-700 uppercase tracking-wider">
               MDX Content
             </span>
             <button
               onClick={() => setShowHelp(!showHelp)}
-              className="text-[#8a8068] hover:text-[#1c4a2a] transition-colors"
+              className="text-ink-300 hover:text-green-800 transition-colors"
               title="MDX Component Reference"
             >
               <HelpCircle size={14} />
             </button>
           </div>
-          <span className="text-xs text-[#8a8068]">
+          <span className="text-xs text-ink-300">
             {content.length.toLocaleString()} chars
           </span>
         </div>
 
         {showHelp && (
-          <div className="bg-[#1c2e1f] text-[#c8e6c0] p-4 text-xs font-mono border-b border-[#d8d2be] whitespace-pre-wrap leading-relaxed">
+          <div className="bg-green-900 text-green-100 p-4 text-xs font-mono border-b border-cream-400 whitespace-pre-wrap leading-relaxed">
             {MDX_HELP}
           </div>
         )}
@@ -264,7 +266,7 @@ export function NewsletterEditor({ newsletter }: Props) {
           <button
             onClick={() => save()}
             disabled={saving || !title || !slug}
-            className="inline-flex items-center gap-2 bg-[#f7f4ed] border border-[#d8d2be] text-[#1c2e1f] px-4 py-2 rounded-md text-sm font-medium hover:bg-[#ede8d8] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-cream-200 border border-cream-400 text-green-900 px-4 py-2 rounded-md text-sm font-medium hover:bg-cream-300 transition-colors disabled:opacity-50"
           >
             <Save size={14} />
             {saving ? "Saving..." : "Save Draft"}
@@ -274,7 +276,7 @@ export function NewsletterEditor({ newsletter }: Props) {
             <button
               onClick={() => save({ publish: true })}
               disabled={publishing || !title || !slug}
-              className="inline-flex items-center gap-2 bg-[#1c4a2a] text-[#f7f4ed] px-4 py-2 rounded-md text-sm font-medium hover:bg-[#163d22] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-green-800 text-cream-200 px-4 py-2 rounded-md text-sm font-medium hover:bg-green-900 transition-colors disabled:opacity-50"
             >
               <Eye size={14} />
               {publishing ? "Publishing..." : "Publish to Archive"}
@@ -289,7 +291,7 @@ export function NewsletterEditor({ newsletter }: Props) {
                 }
               }}
               disabled={sending}
-              className="inline-flex items-center gap-2 bg-[#c8902a] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#b07820] transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-gold-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               <Send size={14} />
               {sending ? "Sending..." : "Send to Subscribers"}
@@ -297,7 +299,7 @@ export function NewsletterEditor({ newsletter }: Props) {
           )}
 
           {isSent && (
-            <span className="inline-flex items-center gap-2 text-sm text-green-600 font-medium">
+            <span className="inline-flex items-center gap-2 text-sm text-green-800 font-medium">
               ✓ Sent {newsletter?.sent_at ? new Date(newsletter.sent_at).toLocaleDateString() : ""}
             </span>
           )}
@@ -307,7 +309,7 @@ export function NewsletterEditor({ newsletter }: Props) {
           {newsletter?.id && (
             <button
               onClick={previewEmail}
-              className="inline-flex items-center gap-1 text-sm text-[#1c4a2a] hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-green-800 hover:underline"
               title="Preview rendered email HTML"
             >
               <Eye size={14} />
@@ -318,7 +320,7 @@ export function NewsletterEditor({ newsletter }: Props) {
             <a
               href={`/newsletters/${newsletter.slug}`}
               target="_blank"
-              className="inline-flex items-center gap-1 text-sm text-[#1c4a2a] hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-green-800 hover:underline"
             >
               <EyeOff size={14} />
               Preview Web
@@ -327,7 +329,7 @@ export function NewsletterEditor({ newsletter }: Props) {
           {message && (
             <span
               className={`text-sm font-medium ${
-                message.startsWith("Error") ? "text-red-500" : "text-[#1c4a2a]"
+                message.startsWith("Error") ? "text-error" : "text-green-800"
               }`}
             >
               {message}

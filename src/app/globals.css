@@ -136,24 +136,3 @@ body {
 .link-green-hover { transition: color 0.15s ease; }
 .link-green-hover:hover { color: var(--green-800) !important; }
 
-.btn-green {
-  background: var(--green-800);
-  color: #ffffff;
-  transition: background 0.15s ease;
-}
-.btn-green:hover { background: var(--green-700); }
-
-.btn-outline-green {
-  background: transparent;
-  color: var(--green-800);
-  border: 1px solid var(--green-800);
-  transition: background 0.15s ease, color 0.15s ease;
-}
-.btn-outline-green:hover { background: var(--green-800); color: #ffffff; }
-
-.btn-white-green {
-  background: #ffffff;
-  color: var(--green-800);
-  transition: background 0.15s ease;
-}
-.btn-white-green:hover { background: var(--cream-200); }
