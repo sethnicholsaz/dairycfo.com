@@ -95,7 +95,7 @@ export default async function HomePage() {
                     Every spring, cows eat fresh pasture grass and their bodies respond the way you&apos;d expect — more milk, more butterfat, more everything. Dairymen call it spring flush.
                   </p>
                   <p style={{ fontSize: "12px", lineHeight: 1.7, color: "#2d2a1e", fontFamily: "Georgia, serif", margin: 0 }}>
-                    For the creamery, spring flush means more raw milk hitting the dock at lower spot prices. For the farmer, it means the Class III price tends to soften as supply outpaces demand...
+                    For dairy industry professionals — creameries, co-ops, lenders, and equipment dealers — spring flush means lower spot prices and shifting cash flow assumptions across the supply chain...
                   </p>
                 </div>
                 {/* Footer */}

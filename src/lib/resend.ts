@@ -50,7 +50,7 @@ export async function sendWelcomeEmail(email: string, firstName?: string | null)
         <tr><td style="background:#ffffff;padding:32px 28px;border-left:1px solid #d8d2be;border-right:1px solid #d8d2be;">
           <h2 style="font-family:Georgia,serif;color:#1c4a2a;margin:0 0 16px;">You're in${name}.</h2>
           <p style="color:#2d2a1e;line-height:1.7;margin:0 0 16px;">
-            Welcome to DairyCFO — weekly market data and farm operations intelligence for creamery teams.
+            Welcome to DairyCFO — weekly market data and farm operations intelligence for dairy industry professionals.
           </p>
           <p style="color:#2d2a1e;line-height:1.7;margin:0 0 24px;">
             You now have access to the full newsletter archive. Every issue covers dairy market prices, farm economics, and the operational realities that drive what shows up at your facility.

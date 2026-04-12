@@ -22,7 +22,7 @@ export default function SponsorsPage() {
               Reach the people who buy milk.
             </h1>
             <p className="leading-relaxed" style={{ color: "#4a5046", fontSize: "1.125rem", maxWidth: "500px" }}>
-              DairyCFO goes to creamery procurement teams, QA directors, plant managers, and co-op leadership — the people who make decisions about dairy supply relationships.
+              DairyCFO goes to dairy industry professionals — creamery procurement teams, co-op leadership, lenders, equipment dealers, hedger firms, and insurance agents — the people whose business is tied to what happens on dairy farms.
             </p>
           </div>
         </section>
@@ -51,7 +51,7 @@ export default function SponsorsPage() {
                   {[
                     {
                       title: "Focused, not broad",
-                      desc: "We don't write for consumers or farmers — we write for the creamery side of the supply chain. Your ad reaches people who speak your language.",
+                      desc: "We don't write for consumers or farmers — we write for the professionals whose business depends on what happens on dairy farms: creameries, lenders, equipment dealers, hedger firms, and insurance agents. Your ad reaches people who speak your language.",
                     },
                     {
                       title: "Simple flat fee",

@@ -56,9 +56,9 @@ What's happening in the parlor, the feedlot, and the fields this week.
 
 <SponsorBlock position="body" />
 
-## What This Means for Creameries
+## What This Means for Dairy Industry Professionals
 
-Translate the farm-side news into procurement and supply chain context for creamery teams.
+Translate the farm-side news into actionable context for dairy industry professionals — creameries, co-ops, lenders, equipment dealers, and advisors.
 
 ---
 
