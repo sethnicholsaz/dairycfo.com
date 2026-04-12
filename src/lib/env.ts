@@ -20,6 +20,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url("NEXT_PUBLIC_APP_URL must be a valid URL").optional(),
   // Optional
   USDA_AMS_API_KEY: z.string().optional(),
+  BRAVE_API_KEY: z.string().optional(),
   SPONSOR_PRICE_CENTS: z.coerce.number().default(50000),
   SENTRY_DSN: z.string().optional(),
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
