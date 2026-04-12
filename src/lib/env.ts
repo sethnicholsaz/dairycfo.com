@@ -12,15 +12,15 @@ const envSchema = z.object({
   // Stripe
   STRIPE_SECRET_KEY: z.string().min(1, "STRIPE_SECRET_KEY is required"),
   STRIPE_WEBHOOK_SECRET: z.string().min(1, "STRIPE_WEBHOOK_SECRET is required"),
-  STRIPE_PRICE_PRO_MONTHLY: z.string().min(1, "STRIPE_PRICE_PRO_MONTHLY is required"),
-  STRIPE_PRICE_PRO_ANNUAL: z.string().min(1, "STRIPE_PRICE_PRO_ANNUAL is required"),
-  STRIPE_PRICE_TEAM_MONTHLY: z.string().min(1, "STRIPE_PRICE_TEAM_MONTHLY is required"),
+  STRIPE_PRICE_PRO_MONTHLY: z.string().optional(),
+  STRIPE_PRICE_PRO_ANNUAL: z.string().optional(),
+  STRIPE_PRICE_TEAM_MONTHLY: z.string().optional(),
   // Resend
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
   RESEND_AUDIENCE_ID: z.string().min(1, "RESEND_AUDIENCE_ID is required"),
   RESEND_WEBHOOK_SECRET: z.string().min(1, "RESEND_WEBHOOK_SECRET is required"),
   // App
-  NEXT_PUBLIC_APP_URL: z.string().url("NEXT_PUBLIC_APP_URL must be a valid URL"),
+  NEXT_PUBLIC_APP_URL: z.string().url("NEXT_PUBLIC_APP_URL must be a valid URL").optional(),
   // Optional
   USDA_AMS_API_KEY: z.string().optional(),
   SPONSOR_PRICE_CENTS: z.coerce.number().default(50000),

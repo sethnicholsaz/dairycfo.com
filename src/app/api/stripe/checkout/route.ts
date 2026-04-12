@@ -4,7 +4,7 @@ import { createServiceClient } from "@/lib/supabase/server"
 import { getSubscriberFromCookie } from "@/lib/subscriber"
 import { STRIPE_PRICES } from "@/lib/subscription"
 
-const VALID_PRICES = new Set(Object.values(STRIPE_PRICES))
+const VALID_PRICES = new Set(Object.values(STRIPE_PRICES).filter(Boolean))
 
 export async function POST(req: NextRequest) {
   const subscriber = await getSubscriberFromCookie()
