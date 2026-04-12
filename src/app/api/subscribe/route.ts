@@ -2,8 +2,26 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import { createSubscriberToken, COOKIE_NAME } from "@/lib/subscriber"
 import { upsertResendContact, sendWelcomeEmail } from "@/lib/resend"
+import { subscribeRatelimit, getClientIp } from "@/lib/ratelimit"
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  const rl = await subscribeRatelimit.limit(ip)
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rl.reset - Math.floor(Date.now() / 1000)),
+          "X-RateLimit-Limit": String(rl.limit),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(rl.reset),
+        },
+      },
+    )
+  }
+
   try {
     const { email, name } = await req.json()
 

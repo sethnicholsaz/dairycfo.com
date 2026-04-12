@@ -2,11 +2,29 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServiceClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { env } from "@/lib/env"
+import { sponsorsRatelimit, getClientIp } from "@/lib/ratelimit"
 
 const SPONSOR_PRICE_CENTS = env.SPONSOR_PRICE_CENTS
 const ARTWORK_MAX_BYTES = 5 * 1024 * 1024 // 5MB
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req)
+  const rl = await sponsorsRatelimit.limit(ip)
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rl.reset - Math.floor(Date.now() / 1000)),
+          "X-RateLimit-Limit": String(rl.limit),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(rl.reset),
+        },
+      },
+    )
+  }
+
   try {
     const fd = await req.formData()
 
