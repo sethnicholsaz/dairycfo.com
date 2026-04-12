@@ -1,4 +1,5 @@
 import { MDXRemote } from "next-mdx-remote/rsc"
+import remarkGfm from "remark-gfm"
 import { MarketSnapshot } from "./MarketSnapshot"
 import { SponsorBlock } from "./SponsorBlock"
 
@@ -17,7 +18,11 @@ export function NewsletterRenderer({ content, newsletterId }: Props) {
 
   return (
     <div className="newsletter-prose">
-      <MDXRemote source={content} components={components} />
+      <MDXRemote
+        source={content}
+        components={components}
+        options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+      />
     </div>
   )
 }
