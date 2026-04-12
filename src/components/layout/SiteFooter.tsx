@@ -23,6 +23,7 @@ export function SiteFooter() {
               {[
                 { href: "/newsletters", label: "Archive" },
                 { href: "/subscribe",   label: "Subscribe" },
+                { href: "/pricing",     label: "Pricing" },
                 { href: "/sponsors",    label: "Sponsor an issue" },
               ].map(({ href, label }) => (
                 <li key={href}>

@@ -49,6 +49,15 @@ export function SiteNav() {
             Archive
           </Link>
           <Link
+            href="/pricing"
+            className="text-sm font-medium transition-colors duration-150"
+            style={{ color: "#4a5046" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#111410")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#4a5046")}
+          >
+            Pricing
+          </Link>
+          <Link
             href="/sponsors"
             className="text-sm font-medium transition-colors duration-150"
             style={{ color: "#4a5046" }}
@@ -56,6 +65,15 @@ export function SiteNav() {
             onMouseLeave={e => (e.currentTarget.style.color = "#4a5046")}
           >
             Sponsor
+          </Link>
+          <Link
+            href="/account"
+            className="text-sm font-medium transition-colors duration-150"
+            style={{ color: "#4a5046" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#111410")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#4a5046")}
+          >
+            Account
           </Link>
           <Link
             href="/subscribe"
@@ -86,7 +104,9 @@ export function SiteNav() {
           style={{ background: "rgba(253,252,249,0.97)", borderColor: "#d8d2be" }}
         >
           <Link href="/newsletters" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Archive</Link>
+          <Link href="/pricing" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Pricing</Link>
           <Link href="/sponsors" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Sponsor</Link>
+          <Link href="/account" className="block py-2.5 text-sm font-medium" style={{ color: "#4a5046" }} onClick={() => setOpen(false)}>Account</Link>
           <div className="pt-2">
             <Link
               href="/subscribe"
