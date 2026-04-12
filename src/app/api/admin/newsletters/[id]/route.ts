@@ -124,7 +124,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     await supabase
       .from("newsletters")
-      .update({ sent_at: new Date().toISOString() })
+      .update({ sent_at: new Date().toISOString(), broadcast_id: broadcast.id })
       .eq("id", id)
 
     return NextResponse.json({ success: true, broadcastId: broadcast.id })

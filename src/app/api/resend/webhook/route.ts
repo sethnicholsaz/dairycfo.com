@@ -66,6 +66,38 @@ export async function POST(req: NextRequest) {
           .is("unsubscribed_at", null)
       }
     }
+
+    // Open/click analytics — store events linked to newsletters via broadcast_id
+    if (event.type === "email.opened" || event.type === "email.clicked") {
+      const data = event.data as {
+        broadcast_id?: string
+        email_id: string
+        to: string[]
+        created_at: string
+      }
+      const email = data.to?.[0]
+      const broadcastId = data.broadcast_id
+
+      if (email && broadcastId) {
+        const { data: newsletter } = await supabase
+          .from("newsletters")
+          .select("id")
+          .eq("broadcast_id", broadcastId)
+          .single()
+
+        if (newsletter) {
+          await supabase.from("newsletter_analytics").upsert(
+            {
+              newsletter_id: newsletter.id,
+              event_type: event.type,
+              email,
+              timestamp: data.created_at,
+            },
+            { onConflict: "newsletter_id,event_type,email", ignoreDuplicates: true }
+          )
+        }
+      }
+    }
   } catch (err) {
     console.error("Resend webhook handler error:", err)
     Sentry.captureException(err, {

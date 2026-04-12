@@ -155,6 +155,18 @@ export function NewsletterEditor({ newsletter }: Props) {
   const isPublished = !!newsletter?.published_at
   const isSent = !!newsletter?.sent_at
 
+  async function previewEmail() {
+    if (!newsletter?.id) return
+    const res = await fetch(`/api/admin/newsletters/${newsletter.id}/preview`)
+    if (!res.ok) return
+    const html = await res.text()
+    const win = window.open("", "_blank")
+    if (win) {
+      win.document.write(html)
+      win.document.close()
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Meta fields */}
@@ -292,6 +304,16 @@ export function NewsletterEditor({ newsletter }: Props) {
         </div>
 
         <div className="flex items-center gap-3">
+          {newsletter?.id && (
+            <button
+              onClick={previewEmail}
+              className="inline-flex items-center gap-1 text-sm text-[#1c4a2a] hover:underline"
+              title="Preview rendered email HTML"
+            >
+              <Eye size={14} />
+              Preview Email
+            </button>
+          )}
           {newsletter?.slug && (
             <a
               href={`/newsletters/${newsletter.slug}`}
@@ -299,7 +321,7 @@ export function NewsletterEditor({ newsletter }: Props) {
               className="inline-flex items-center gap-1 text-sm text-[#1c4a2a] hover:underline"
             >
               <EyeOff size={14} />
-              Preview
+              Preview Web
             </a>
           )}
           {message && (
