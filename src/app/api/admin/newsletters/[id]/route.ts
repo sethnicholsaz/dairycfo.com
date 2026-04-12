@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import * as Sentry from "@sentry/nextjs"
 import { createServiceClient } from "@/lib/supabase/server"
 import { resend, FROM_EMAIL, REPLY_TO, AUDIENCE_ID } from "@/lib/resend"
 import { renderNewsletterEmail } from "@/lib/email-renderer"
@@ -103,6 +104,10 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     if (broadcastError || !broadcast) {
       console.error("Broadcast create error:", broadcastError)
+      Sentry.captureException(broadcastError ?? new Error("Broadcast creation returned null"), {
+        tags: { operation: "newsletter_send", failure_type: "broadcast_create" },
+        extra: { newsletterId: id, subject },
+      })
       return NextResponse.json({ error: "Failed to create broadcast" }, { status: 500 })
     }
 
@@ -110,6 +115,10 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     if (sendError) {
       console.error("Broadcast send error:", sendError)
+      Sentry.captureException(sendError, {
+        tags: { operation: "newsletter_send", failure_type: "broadcast_send" },
+        extra: { newsletterId: id, broadcastId: broadcast.id, subject },
+      })
       return NextResponse.json({ error: "Failed to send broadcast" }, { status: 500 })
     }
 

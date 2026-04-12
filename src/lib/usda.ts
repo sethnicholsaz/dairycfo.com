@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/nextjs"
+
 // USDA AMS Market News API
 // Auth: HTTP Basic — API key as username, empty password
 //
@@ -84,6 +86,9 @@ export async function fetchDairyProductPrices(): Promise<{
     }
   } catch (err) {
     console.error("fetchDairyProductPrices error:", err)
+    Sentry.captureException(err, {
+      tags: { operation: "usda_fetch", report: "1603" },
+    })
     return { butter: null, cheese_blocks: null, cheese_barrels: null, nfdm: null, date: new Date().toISOString().split("T")[0] }
   }
 }
@@ -116,6 +121,16 @@ export async function fetchFeedCostInputs(): Promise<{
   let alfalfa_price: number | null = null
 
   // Corn and soybean meal from report 3618
+  if (grainRes.status === "rejected") {
+    Sentry.captureException(grainRes.reason, {
+      tags: { operation: "usda_fetch", report: "3618" },
+    })
+  } else if (!grainRes.value.ok) {
+    Sentry.captureMessage(`USDA report 3618 returned ${grainRes.value.status}`, {
+      level: "error",
+      tags: { operation: "usda_fetch", report: "3618" },
+    })
+  }
   if (grainRes.status === "fulfilled" && grainRes.value.ok) {
     const data = await grainRes.value.json()
 
@@ -146,6 +161,16 @@ export async function fetchFeedCostInputs(): Promise<{
   }
 
   // Alfalfa from report 2807 (Iowa Direct Hay)
+  if (hayRes.status === "rejected") {
+    Sentry.captureException(hayRes.reason, {
+      tags: { operation: "usda_fetch", report: "2807" },
+    })
+  } else if (!hayRes.value.ok) {
+    Sentry.captureMessage(`USDA report 2807 returned ${hayRes.value.status}`, {
+      level: "error",
+      tags: { operation: "usda_fetch", report: "2807" },
+    })
+  }
   if (hayRes.status === "fulfilled" && hayRes.value.ok) {
     const data = await hayRes.value.json()
 
