@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/market-data/databento",
+      "schedule": "0 7 * * *"
+    }
+  ]
+}

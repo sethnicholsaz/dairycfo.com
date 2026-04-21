@@ -21,6 +21,7 @@ const envSchema = z.object({
   // Optional
   USDA_AMS_API_KEY: z.string().optional(),
   BRAVE_API_KEY: z.string().optional(),
+  DATABENTO_API_KEY: z.string().optional(),
   SPONSOR_PRICE_CENTS: z.coerce.number().default(50000),
   SENTRY_DSN: z.string().optional(),
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
