@@ -20,15 +20,33 @@ interface MarketRow {
   source: string
 }
 
+interface FuturesDayRow {
+  date: string
+  fronts: Record<string, { symbol: string; close: number }>
+}
+
 interface Props {
   recent: MarketRow[]
+  futures: FuturesDayRow[]
 }
 
 function fmt(v: number | null) {
   return v != null ? `$${v.toFixed(2)}` : "—"
 }
 
-export function MarketDataAdmin({ recent }: Props) {
+const FUTURES_COLS: { key: string; label: string; unit: string; decimals: number }[] = [
+  { key: "class_iii",     label: "Class III",     unit: "$/cwt", decimals: 2 },
+  { key: "class_iv",      label: "Class IV",      unit: "$/cwt", decimals: 2 },
+  { key: "butter",        label: "Butter",        unit: "¢/lb",  decimals: 3 },
+  { key: "cheese",        label: "Cheese",        unit: "$/lb",  decimals: 3 },
+  { key: "nfdm",          label: "NFDM",          unit: "¢/lb",  decimals: 3 },
+  { key: "dry_whey",      label: "Dry Whey",      unit: "¢/lb",  decimals: 3 },
+  { key: "live_cattle",   label: "Live Cattle",   unit: "¢/lb",  decimals: 3 },
+  { key: "feeder_cattle", label: "Feeder Cattle", unit: "¢/lb",  decimals: 3 },
+  { key: "corn",          label: "Corn",          unit: "¢/bu",  decimals: 2 },
+]
+
+export function MarketDataAdmin({ recent, futures }: Props) {
   const [fetching, setFetching] = useState(false)
   const [fetchMsg, setFetchMsg] = useState("")
   const [uploading, setUploading] = useState(false)
@@ -200,6 +218,59 @@ export function MarketDataAdmin({ recent }: Props) {
                     <td className="px-4 py-3 text-right">{fmt(row.butter_price)}</td>
                     <td className="px-4 py-3 text-right">{fmt(row.cheese_blocks_price)}</td>
                     <td className="px-4 py-3 text-right">{fmt(row.nfdm_price)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Futures front-month table */}
+      <div className="bg-white rounded-lg border border-cream-400 overflow-hidden">
+        <div className="px-6 py-4 border-b border-cream-400">
+          <h2 className="font-semibold text-green-900">Futures Front-Month Settlements</h2>
+          <p className="text-xs text-[#8a8068] mt-0.5">CME settlement prices for all 9 commodities, pulled daily from Databento. Full forward curve stored in <code className="bg-cream-200 px-1 py-0.5 rounded">commodity_closes</code>.</p>
+        </div>
+        {futures.length === 0 ? (
+          <div className="px-6 py-10 text-center text-sm text-[#8a8068]">
+            No futures data yet. The daily Databento cron runs at 10:00 UTC.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs text-[#8a8068] uppercase tracking-wider border-b border-cream-400 bg-cream-100">
+                  <th className="px-3 py-3 text-left">Date</th>
+                  {FUTURES_COLS.map((col) => (
+                    <th key={col.key} className="px-3 py-3 text-right whitespace-nowrap">
+                      {col.label}
+                      <div className="text-[10px] font-normal normal-case text-[#8a8068] mt-0.5">{col.unit}</div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {futures.map((row) => (
+                  <tr key={row.date} className="border-b border-[#f0ece0] last:border-0">
+                    <td className="px-3 py-3 font-medium text-green-900 whitespace-nowrap">
+                      {new Date(row.date + "T00:00:00").toLocaleDateString()}
+                    </td>
+                    {FUTURES_COLS.map((col) => {
+                      const front = row.fronts[col.key]
+                      return (
+                        <td key={col.key} className="px-3 py-3 text-right whitespace-nowrap">
+                          {front ? (
+                            <>
+                              <div className="tabular-nums">{front.close.toFixed(col.decimals)}</div>
+                              <div className="text-[10px] text-[#8a8068]">{front.symbol}</div>
+                            </>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                      )
+                    })}
                   </tr>
                 ))}
               </tbody>

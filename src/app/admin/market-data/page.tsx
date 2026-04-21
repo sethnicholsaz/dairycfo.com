@@ -13,8 +13,48 @@ async function getRecentMarketData() {
   return data ?? []
 }
 
+interface ContractClose {
+  symbol: string
+  close: number
+  position: number
+}
+
+interface CommodityCloseRow {
+  price_date: string
+  commodity: string
+  contracts: ContractClose[]
+}
+
+export interface FuturesDayRow {
+  date: string
+  fronts: Record<string, { symbol: string; close: number }>
+}
+
+async function getRecentFutures(): Promise<FuturesDayRow[]> {
+  const supabase = await createServiceClient()
+  const { data } = await supabase
+    .from("commodity_closes")
+    .select("price_date, commodity, contracts")
+    .order("price_date", { ascending: false })
+    .limit(90)
+
+  const rows = (data ?? []) as CommodityCloseRow[]
+  const byDate = new Map<string, Record<string, { symbol: string; close: number }>>()
+  for (const row of rows) {
+    const front = row.contracts?.[0]
+    if (!front) continue
+    if (!byDate.has(row.price_date)) byDate.set(row.price_date, {})
+    byDate.get(row.price_date)![row.commodity] = { symbol: front.symbol, close: front.close }
+  }
+
+  return Array.from(byDate.entries())
+    .map(([date, fronts]) => ({ date, fronts }))
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 10)
+}
+
 export default async function MarketDataPage() {
-  const recent = await getRecentMarketData()
+  const [recent, futures] = await Promise.all([getRecentMarketData(), getRecentFutures()])
 
   return (
     <div className="min-h-screen bg-cream-200">
@@ -26,7 +66,7 @@ export default async function MarketDataPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-10">
-        <MarketDataAdmin recent={recent} />
+        <MarketDataAdmin recent={recent} futures={futures} />
       </main>
     </div>
   )
